@@ -14,12 +14,12 @@ app.get("/productos/:id", async (req, res) => {
     const filteredProduct = producto.find((p) => p.code === productId);
 
     if (filteredProduct) {
-      res.json(filteredProduct);
+      res.send(filteredProduct);
     } else {
-      res.status(404).json({ message: "Producto no encontrado" });
+      res.status(404).send({ message: "Producto no encontrado" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Error al obtener los productos" });
+    res.status(500).send({ message: "Error al obtener los productos" });
   }
 });
 
@@ -30,12 +30,12 @@ app.get("/productos", async (req, res) => {
 
     if (limit && !isNaN(limit)) {
       const limitedProducts = productos.slice(0, Number(limit));
-      res.json(limitedProducts);
+      res.send(limitedProducts);
     } else {
-      res.json(productos);
+      res.send(productos);
     }
   } catch (error) {
-    res.status(500).json({ message: "Error al obtener los productos" });
+    res.status(500).send({ message: "Error al obtener los productos" });
   }
 });
 

@@ -1,29 +1,112 @@
 [
   {
+    "id": 1,
     "title": "Soy el producto 1",
     "description": "Soy un producto de excelente calidad y muy vendido",
-    "price": 100,
-    "thumbnail": "no tengo foto :C",
-    "code": 12345,
-    "stock": 10,
-    "id": 1
+    "price": 1000,
+    "code": 64420,
+    "stock": 15,
+    "status": true,
+    "category": "categoria especial",
+    "thumbnails": []
   },
   {
-    "title": "Producto 2 Actualizado",
-    "description": "Descripción actualizada",
-    "price": 75,
-    "thumbnail": "nueva_foto.jpg",
-    "code": 54321,
-    "stock": 8,
-    "id": 2
+    "id": 2,
+    "title": "Soy el producto 2",
+    "description": "Soy un producto de excelente calidad y muy vendido",
+    "price": 1000,
+    "code": 64421,
+    "stock": 15,
+    "status": true,
+    "category": "categoria especial",
+    "thumbnails": []
   },
   {
+    "id": 3,
     "title": "Soy el producto 3",
-    "description": "Soy un producto muy económico pero bueno",
-    "price": 25,
-    "thumbnail": "no tengo foto :C",
-    "code": 56789,
-    "stock": 2,
-    "id": 3
+    "description": "Soy un producto de excelente calidad y muy vendido",
+    "price": 1000,
+    "code": 64422,
+    "stock": 15,
+    "status": true,
+    "category": "categoria especial",
+    "thumbnails": []
+  },
+  {
+    "id": 4,
+    "title": "Soy el producto 4",
+    "description": "Soy un producto de excelente calidad y muy vendido",
+    "price": 1000,
+    "code": 64423,
+    "stock": 15,
+    "status": true,
+    "category": "categoria especial",
+    "thumbnails": []
+  },
+  {
+    "id": 5,
+    "title": "Soy el producto 5",
+    "description": "Soy un producto de excelente calidad y muy vendido",
+    "price": 1000,
+    "code": 64424,
+    "stock": 15,
+    "status": true,
+    "category": "categoria especial",
+    "thumbnails": []
+  },
+  {
+    "id": 6,
+    "title": "Soy el producto 6",
+    "description": "Soy un producto de excelente calidad y muy vendido",
+    "price": 1000,
+    "code": 64425,
+    "stock": 15,
+    "status": true,
+    "category": "categoria especial",
+    "thumbnails": []
+  },
+  {
+    "id": 7,
+    "title": "Soy el producto 7",
+    "description": "Soy un producto de excelente calidad y muy vendido",
+    "price": 1000,
+    "code": 64426,
+    "stock": 15,
+    "status": true,
+    "category": "categoria especial",
+    "thumbnails": []
+  },
+  {
+    "id": 8,
+    "title": "Soy el producto 8",
+    "description": "Soy un producto de excelente calidad y muy vendido",
+    "price": 1000,
+    "code": 64427,
+    "stock": 15,
+    "status": true,
+    "category": "categoria especial",
+    "thumbnails": []
+  },
+  {
+    "id": 9,
+    "title": "Soy el producto 9",
+    "description": "Soy un producto de excelente calidad y muy vendido",
+    "price": 1000,
+    "code": 64428,
+    "stock": 15,
+    "status": true,
+    "category": "categoria especial",
+    "thumbnails": []
+  },
+  {
+    "id": 10,
+    "title": "Soy el producto 10",
+    "description": "Soy un producto de excelente calidad y muy vendido",
+    "price": 1000,
+    "code": 64429,
+    "stock": 15,
+    "status": true,
+    "category": "categoria especial",
+    "thumbnails": []
   }
 ]

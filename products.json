@@ -108,5 +108,16 @@
     "status": true,
     "category": "categoria especial",
     "thumbnails": []
+  },
+  {
+    "id": 11,
+    "title": "Soy el producto 11",
+    "description": "Soy un producto de excelente calidad y muy vendido",
+    "price": 1000,
+    "code": 644290,
+    "stock": 15,
+    "status": true,
+    "category": "categoria especial",
+    "thumbnails": []
   }
 ]

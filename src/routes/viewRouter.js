@@ -19,10 +19,12 @@ viewRouter.get("/", async (req, res) => {
     try {
       const products = await productM.getProduct();
       res.render("realTimeProducts", { products });
-      
+  
       socketServer.emit("productsUpdated", products);
     } catch (error) {
-      res.status(500).send({ status: "error", message: "Error al obtener los productos" });
+      res
+        .status(500)
+        .send({ status: "error", message: "Error al obtener los productos" });
     }
   });
 

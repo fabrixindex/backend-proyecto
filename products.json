@@ -112,9 +112,31 @@
   {
     "id": 11,
     "title": "Soy el producto 11",
-    "description": "Soy un producto de excelente calidad y muy vendido",
+    "description": "Soy un producto de excelente calidad y muy vendido. ACTUALIZADO",
     "price": 1000,
     "code": 644290,
+    "stock": 15,
+    "status": true,
+    "category": "categoria especial",
+    "thumbnails": []
+  },
+  {
+    "id": 12,
+    "title": "Soy el producto 11",
+    "description": "Soy un producto de excelente calidad y muy vendido. ACTUALIZADO",
+    "price": 1000,
+    "code": 644999,
+    "stock": 15,
+    "status": true,
+    "category": "categoria especial",
+    "thumbnails": []
+  },
+  {
+    "id": 13,
+    "title": "Soy el producto nuevo",
+    "description": "Soy un producto de excelente calidad y muy vendido. ACTUALIZADO",
+    "price": 1000,
+    "code": 194838,
     "stock": 15,
     "status": true,
     "category": "categoria especial",

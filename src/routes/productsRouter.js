@@ -1,5 +1,6 @@
 import { Router } from "express";
 import ProductManager from "../productManager.js";
+import socketServer  from "../app.js";
 
 const router = Router();
 const productM = new ProductManager("./products.json");
@@ -86,6 +87,10 @@ router.post("/new-product", async (req, res) => {
       status,
       category
     );
+
+    const productos = await productM.getProduct();
+    socketServer.emit("emmit-products", productos);
+
     res.status(200).send({ message: result.message, product: result.product });
   } catch (error) {
     res.status(500).send({ message: "Error al agregar el producto" });

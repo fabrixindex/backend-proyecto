@@ -22,7 +22,7 @@ const socketServer = new Server(httpServer)
 
 /*-------------------------------------- ROUTES --------------------------------------------*/
 
-app.use("/api/productos", productsRouter);
+app.use("/api/productos", productsRouter); 
 app.use("/api/carts", cartRouter);
 
 app.use("/", viewRouter);
@@ -40,3 +40,4 @@ socketServer.on("connection", socket => {
   console.log("Cliente conectado");
 });
 
+export default {app, socketServer};

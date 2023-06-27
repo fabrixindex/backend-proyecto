@@ -1,10 +1,8 @@
 import { Router } from "express";
 import ProductManager from "../productManager.js";
-import { Server } from "socket.io";
 
 const viewRouter = Router();
 const productM = new ProductManager("./products.json");
-const socketServer = new Server();
 
 viewRouter.get("/", async (req, res) => {
     try {
@@ -19,8 +17,6 @@ viewRouter.get("/", async (req, res) => {
     try {
       const products = await productM.getProduct();
       res.render("realTimeProducts", { products });
-  
-      socketServer.emit("productsUpdated", products);
     } catch (error) {
       res
         .status(500)

@@ -18,7 +18,7 @@ const httpServer = app.listen(8080, () => console.log("Servidor escuchando en el
 
 /*-------------------------------- SOCKET SERVER -------------------------------------------*/
 
-const socketServer = new Server(httpServer)
+const io = new Server(httpServer)
 
 /*-------------------------------------- ROUTES --------------------------------------------*/
 
@@ -34,10 +34,22 @@ app.set('view engine', 'handlebars');
 
 app.use(express.static(`${__dirname}/public`))
 
+/*----------------------------- BASE DE DATOS DE MENSAJES --------------------------------- */
+const messages = [];
+
 /*----------------------------- CONFIGURACION SOCKET SERVER---------------------------------*/
 
-socketServer.on("connection", socket => {
+io.on("connection", socket => {
   console.log("Cliente conectado");
+
+  socket.on('message', data =>{
+    messages.push(data)
+    io.emit('messageLogs', messages)
+  })
+
+  socket.on(`authenticated`, data =>{
+    socket.broadcast.emit(`newUserConnected`, data)
+  })
 });
 
-export default {app, socketServer};
+export default {app, socketServer: io};

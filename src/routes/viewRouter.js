@@ -1,5 +1,5 @@
 import { Router } from "express";
-import ProductManager from "../productManager.js";
+import ProductManager from "../dao/productManager.js";
 
 const viewRouter = Router();
 const productM = new ProductManager("./products.json");
@@ -23,5 +23,15 @@ viewRouter.get("/", async (req, res) => {
         .send({ status: "error", message: "Error al obtener los productos" });
     }
   });
+
+  viewRouter.get("/chat", async (req, res) => {
+    try{
+      res.render("chat")
+    } catch(error){
+      res
+      .status(500)
+      .send({ status: "error", message: "Error al obtener chat"})
+    }
+  })
 
 export default viewRouter;

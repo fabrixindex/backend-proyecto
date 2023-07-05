@@ -2,8 +2,9 @@ import express from "express";
 import productsRouter from "../src/routes/productsRouter.js";
 import cartRouter from "./routes/cartRouter.js";
 import viewRouter from "./routes/viewRouter.js";
+import messagesRouter from "./routes/messages.js";
 import handlebars from "express-handlebars";
-import __dirname from './utils.js';
+import __dirname from './utils/utils.js';
 import { Server } from "socket.io";
 import mongoose from "mongoose";
 import displayRoutes from "express-routemap";
@@ -42,6 +43,7 @@ const io = new Server(httpServer)
 
 app.use("/api/productos", productsRouter); 
 app.use("/api/carts", cartRouter);
+app.use("/messages", messagesRouter);
 
 app.use("/", viewRouter);
 /*----------------------------- CONFIGURACION HANDLEBARS -----------------------------------*/
@@ -52,22 +54,26 @@ app.set('view engine', 'handlebars');
 
 app.use(express.static(`${__dirname}/public`))
 
-/*----------------------------- BASE DE DATOS DE MENSAJES --------------------------------- */
-const messages = [];
-
 /*----------------------------- CONFIGURACION SOCKET SERVER---------------------------------*/
 
 io.on("connection", socket => {
   console.log("Cliente conectado");
 
-  socket.on('message', data =>{
-    messages.push(data)
-    io.emit('messageLogs', messages)
-  })
+  socket.on('message', data => {
+    messages.push(data);
+    const newMessage = new message({ user: data.user, message: data.message });
+    newMessage.save()
+      .then(() => {
+        console.log('Mensaje guardado en la base de datos');
+      })
+      .catch(error => {
+        console.log('Error al guardar el mensaje: ' + error);
+      });
+  });
 
   socket.on(`authenticated`, data =>{
     socket.broadcast.emit(`newUserConnected`, data)
   })
 });
 
-export default {app, socketServer: io};
+export default {app, io};

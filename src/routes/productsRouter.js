@@ -1,6 +1,5 @@
 import { Router } from "express";
 //import ProductManager from "../dao/productManager.js";
-import socketServer  from "../app.js";
 import productManagerMongodb from "../dao/productManager-mongodb.js";
 
 const router = Router();
@@ -16,7 +15,7 @@ router.get("/:pid", async (req, res) => {
     
     //const product = await productM.getProductById(Number(productId)); /*PRODUCT MANAGER (FS)*/
 
-    const product = await productM_Mongo.getProductById(Number(productId));
+    const product = await productM_Mongo.getProductById(productId);
 
     if (product) {
       res.status(200).send({ status: "success", product });
@@ -100,13 +99,22 @@ router.post("/new-product", async (req, res) => {
 
     //const productos = await productM.getProduct(); /*PRODUCT MANAGER (FS)*/
 
-    const productos = await productM_Mongo.getAllproducts();
-    s
-    socketServer.emit("emmit-products", productos);
-
-    res.status(200).send({ message: result.message, product: result.product });
+    if (result) {
+      return res.status(200).json({
+        message: "Producto agregado!",
+        product: result,
+      });
+    } else {
+      return res.status(500).json({
+        message: "Error al agregar el producto",
+      });
+    }
   } catch (error) {
-    res.status(500).send({ message: "Error al agregar el producto" });
+    console.log(error);
+    return res.status(500).json({
+      message: "Error al agregar el producto",
+      error: error.message,
+    });
   }
 });
 
@@ -119,7 +127,7 @@ router.put("/:pid", async (req, res) => {
 
     //const productToUpdate = await productM.getProductById(Number(productId)); /*PRODUCT MANAGER (FS)*/
 
-    const productToUpdate = await productM_Mongo.getProductById(Number(productId));
+    const productToUpdate = await productM_Mongo.getProductById(productId);
 
     if (!productToUpdate) {
       return res
@@ -129,7 +137,7 @@ router.put("/:pid", async (req, res) => {
 
     //const result = await productM.updateProduct(Number(productId), updatedData); /*PRODUCT MANAGER (FS)*/
 
-    const result = await productM_Mongo.updateProduct(Number(productId), updatedData);
+    const result = await productM_Mongo.updateProduct(productId, updatedData);
 
     res.status(200).send({ message: result.message, product: result.product });
   } catch (error) {
@@ -145,13 +153,27 @@ router.delete("/:pid", async (req, res) => {
     
     //const result = await productM.deleteProduct(Number(productId)); /*PRODUCT MANAGER (FS)*/
 
-    const result = await productM_Mongo.DeleteProductById(Number(productId))
+    const result = await productM_Mongo.DeleteProductById(productId);
 
-    res.status(200).send({ status: true, message: result });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({
+        status: false,
+        message: "No se encontró el producto con el ID proporcionado",
+      });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Producto eliminado exitosamente",
+    });
   } catch (error) {
-    res
-      .status(500)
-      .send({ status: false, message: "Error al eliminar el producto" });
+    console.log(error);
+    return res.status(500).json({
+      status: false,
+      message: "Error al eliminar el producto",
+      error: error.message,
+    });
   }
 });
 

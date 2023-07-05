@@ -59,7 +59,15 @@ class productManagerMongodb{
         if (findCode)
         return `El Codigo del producto ya existe. No se puede repetir!`;
 
-        const newProduct = await this.productsModel.create()
+        const newProduct = await this.productsModel.create({
+            title,
+            description,
+            price,
+            code,
+            stock,
+            status,
+            category,
+        });
 
         return newProduct
         }catch(error){
@@ -69,21 +77,21 @@ class productManagerMongodb{
 
     async updateProduct(id, updateBodyProduct){
         try{
-            const updateProduct = await this.productsModel.updateOne({ _id: id }, updateBodyProduct)
+            const updatedProduct = await this.productsModel.updateOne({ _id: id }, updateBodyProduct, {new: true})
 
-            if (!updateProduct) {
+            if (!updatedProduct) {
                 return `No se encontró el producto con ID ${id}.`;
               };
             
-              const updatedProduct = { ...updateProduct, ...updateBodyProduct };
-              const allProducts = await this.getAllproducts();
+              //const updatedProduct = { ...updateProduct, ...updateBodyProduct };
+              //const allProducts = await this.getAllproducts();
 
-              const updatedProducts = allProducts.map((product) => {
-                if (product.id === id) {
-                  return updatedProducts;
-                }
-                return product;
-              });
+              //const updatedProducts = allProducts.map((product) => {
+                //if (product.id === id) {
+                  //return updatedProducts;
+                //}
+                //return product;
+              //});
               return {
                 message: `Se ha actualizado el producto con ID ${id}.`,
                 product: updatedProduct,
@@ -95,9 +103,9 @@ class productManagerMongodb{
 
     async DeleteProductById(id){
         try{
-            const productDeleted = this.productsModel.deleteOne({ _id: id})
+            const productDeleted = await this.productsModel.deleteOne({ _id: id})
 
-            if (productDeleted === -1) {
+            if (productDeleted === 0) {
                 return `No se encontró el producto con ID ${id}.`;
               }
 

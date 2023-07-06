@@ -62,15 +62,13 @@ class cartManagerMongodb{
           return { success: false, message: "Product not exist" };
         }
     
-        if (cart.products && cart.products.length > 0) {
-          const existingProduct = cart.products.find((product) => product.id === productId);
-          if (existingProduct) {
-            existingProduct.quantity += quantity;
-          } else {
-            cart.products.push({ id: productId, quantity: quantity });
-          }
+        const existingProduct = cart.products.find(
+          (product) => product.id === productId
+        );
+        if (existingProduct) {
+          existingProduct.quantity += quantity;
         } else {
-          cart.products = [{ id: productId, quantity: quantity }];
+          cart.products.push({ id: productId, quantity: quantity });
         }
     
         const updatedCart = await cart.save();

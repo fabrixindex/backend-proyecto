@@ -16,7 +16,7 @@ viewRouter.get("/", async (req, res) => {
 
   viewRouter.get("/realtimeproducts", async (req, res) => {
     try {
-      const products = await productM.getAllproducts();
+      const products = await productM.getAllproduct();
       res.render("realTimeProducts", { products });
     } catch (error) {
       res

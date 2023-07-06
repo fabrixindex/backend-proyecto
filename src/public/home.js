@@ -4,7 +4,7 @@ let user;
 let chatBox = document.getElementById("chatBox");
 
 Swal.fire({
-  title: "Identificate!!!!",
+  title: "Ingresa tu correo electronico 😀",
   input: "text",
   text: "Ingresa el usuario para identificarte en el chat",
   icon: "success",

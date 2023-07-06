@@ -8,6 +8,7 @@ import __dirname from './utils/utils.js';
 import { Server } from "socket.io";
 import mongoose from "mongoose";
 import displayRoutes from "express-routemap";
+import messagesModel from "./dao/models/messages.models.js";
 
 /*------------------------------ CONFIGURACION EXPRESS -------------------------------------*/
 
@@ -43,8 +44,7 @@ const io = new Server(httpServer)
 
 app.use("/api/productos", productsRouter); 
 app.use("/api/carts", cartRouter);
-app.use("/messages", messagesRouter);
-
+app.use("/", messagesRouter);
 app.use("/", viewRouter);
 /*----------------------------- CONFIGURACION HANDLEBARS -----------------------------------*/
 
@@ -60,8 +60,7 @@ io.on("connection", socket => {
   console.log("Cliente conectado");
 
   socket.on('message', data => {
-    messages.push(data);
-    const newMessage = new message({ user: data.user, message: data.message });
+    const newMessage = new messagesModel({ user: data.user, message: data.message });
     newMessage.save()
       .then(() => {
         console.log('Mensaje guardado en la base de datos');
@@ -71,9 +70,9 @@ io.on("connection", socket => {
       });
   });
 
-  socket.on(`authenticated`, data =>{
-    socket.broadcast.emit(`newUserConnected`, data)
-  })
+  socket.on(`authenticated`, data => {
+    socket.broadcast.emit(`newUserConnected`, data);
+  });
 });
 
 export default {app, io};

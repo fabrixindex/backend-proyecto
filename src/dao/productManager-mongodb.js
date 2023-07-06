@@ -8,7 +8,7 @@ class productManagerMongodb{
 
     async getAllproducts(){
         try{
-            const products = await this.productsModel.find({})
+            const products = await this.productsModel.find({}).lean().exec()
             
             return products
         }catch(error){

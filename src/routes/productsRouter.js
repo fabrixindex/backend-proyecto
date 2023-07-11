@@ -1,6 +1,7 @@
 import { Router } from "express";
 //import ProductManager from "../dao/productManager.js";
 import productManagerMongodb from "../dao/productManager-mongodb.js";
+//import productsModels from "../dao/models/products.models.js";
 
 const router = Router();
 //const productM = new ProductManager("./products.json");
@@ -35,23 +36,21 @@ router.get("/:pid", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const limit = req.query.limit;
+    const { limit = 10, page = 1, sort, category, available } = req.query;
+
     //const productos = await productM.getProduct(); /*PRODUCT MANAGER (FS)*/
 
-    const productos = await productM_Mongo.getAllproducts();
+    const baseUrl = `${req.protocol}://${req.get('host')}${req.originalUrl.split('?')[0]}`;
 
-    if (limit && !isNaN(limit)) {
-      const limitedProducts = productos.slice(0, Number(limit));
-      res.status(200).send({ status: "success", limitedProducts });
-    } else {
-      res.status(200).send({ status: "success", productos });
-    }
+    const productos = await productM_Mongo.getAllproducts(limit, page, sort, category, available, baseUrl);
+
+    res.send({status: "success", products: productos})
   } catch (error) {
     res
       .status(500)
       .send({ status: "error", message: "Error al obtener los productos" });
   }
-});
+}); 
 
 //ADD PRODUCT
 

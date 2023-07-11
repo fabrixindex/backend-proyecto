@@ -97,4 +97,123 @@ cartRouter.delete("/:cid", async (req, res) => {
   }
 });
 
+//DELETE A PRODUCT OF A CART
+
+cartRouter.delete("/:cid/product/:pid", async (req, res) => {
+  try {
+    const { cid, pid } = req.params;
+
+    const cartId = cid;
+    const productId = pid;
+
+    const cartProd = await cartM_Mongo.removeProductFromCart(cartId, productId);
+
+    if (cartProd.success) {
+      res.status(200).json({
+        status: "success",
+        message: "Producto eliminado del carrito exitosamente.",
+        cart: cartProd.finalCart,
+      });
+    } else {
+      res.status(404).json({
+        status: "error",
+        message: "No se pudo eliminar el producto del carrito.",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "error",
+      message: "Ocurrió un error al eliminar el producto del carrito.",
+    });
+  }
+});
+
+// EMPTY CART
+
+cartRouter.delete("/:cid/emptycart/", async (req, res) => {
+  try {
+    const { cid } = req.params;
+
+    const cartId = cid;
+
+    const emptyCartResult = await cartM_Mongo.emptyCart(cartId);
+
+    if (emptyCartResult.success) {
+      res.status(200).json({
+        status: "success",
+        message: "Se eliminaron todos los productos del carrito exitosamente.",
+        cart: emptyCartResult.finalCart,
+      });
+    } else {
+      res.status(404).json({
+        status: "error",
+        message: "No se pudo vaciar el carrito.",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "error",
+      message: "Ocurrió un error al vaciar el carrito.",
+    });
+  }
+});
+
+//UPDATE DATA CART
+
+cartRouter.put("/:cid", async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const newProducts = req.body.products;
+
+    const response = await cartM_Mongo.UpdateDataCart(cartId, newProducts);
+
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(400).json(response);
+    }
+  } catch (error) {
+    console.error("Error al actualizar los productos en el carrito:", error);
+    res.status(500).json({
+      success: false,
+      message: "Ocurrió un error al actualizar los productos en el carrito.",
+    });
+  }
+});
+
+//UPDATE QUANTITY OF A PRODUCT WITHIN A CART
+
+cartRouter.put("/:cid/product/:pid", async (req, res) => {
+  try {
+    const { cid, pid } = req.params;
+    const { quantity } = req.body;
+
+    const cartId = cid;
+    const productId = pid;
+
+    const updateQuantityResult = await cartM_Mongo.updateQuantityOfProduct(cartId, productId, quantity);
+
+    if (updateQuantityResult.success) {
+      res.status(200).json({
+        status: "success",
+        message: "Se actualizó la cantidad del producto en el carrito exitosamente.",
+        cart: updateQuantityResult.finalCart,
+      });
+    } else {
+      res.status(404).json({
+        status: "error",
+        message: "No se pudo actualizar la cantidad del producto en el carrito.",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "error",
+      message: "Ocurrió un error al actualizar la cantidad del producto en el carrito.",
+    });
+  }
+});
+
 export default cartRouter;

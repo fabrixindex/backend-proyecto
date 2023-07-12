@@ -8,26 +8,10 @@ class cartManagerMongodb{
         this.cartsModel = cartsModel
     }
 
-    async getAllCarts(){
+    async addCart(){
         try{
-            const carts = await this.cartsModel.find({}).lean().exec()
-            return carts
-        }catch(error){
-            console.log(error);
-        }
-    };
-
-    async addCart(products = []){
-        try{
-            const allCarts = await this.getAllCarts();
-            
-            allCarts.push({
-                products 
-            });
-
-            const newCart = await this.cartsModel.create(allCarts)
-
-            return newCart
+          const newCart = await this.cartsModel.create({ products: [] });
+          return newCart;
         }catch(error){
             console.log(error);
         }
@@ -35,13 +19,13 @@ class cartManagerMongodb{
 
     async getCartById(id){
       try{
-        const cartData = await this.cartsModel.findOne({ _id: id}).lean().exec()
+        const cartData = await this.cartsModel.findById({ _id: id}).lean()
 
         if (!cartData) {
           throw new Error(`No se encontró el carrito con ID ${id}.`);
         }
 
-      return cartData
+      return cartData;
       }catch(error){
         throw new Error("Ocurrió un error al obtener el carrito por ID.");
       }
@@ -49,7 +33,7 @@ class cartManagerMongodb{
 
     async addProductToCart(cartId, productId, quantity) {
       try {
-        const cart = await this.getCartById(cartId);
+        const cart = await this.cartsModel.findById(cartId);
 
         if (!cart) {
           console.log(`No se encontró el carrito con ID ${cartId}.`);
@@ -110,7 +94,7 @@ class cartManagerMongodb{
     
     async removeProductFromCart(cartId, productId) {
       try {
-        const cart = await this.getCartById(cartId);
+        const cart = await this.cartsModel.findById(cartId);
     
         if (!cart) {
           console.log(`No se encontró el carrito con ID ${cartId}.`);
@@ -153,7 +137,7 @@ class cartManagerMongodb{
     
     async emptyCart(cartId) {
       try {
-        const cart = await this.getCartById(cartId);
+        const cart = await this.cartsModel.findById(cartId);
     
         if (!cart) {
           console.log(`No se encontró el carrito con ID ${cartId}.`);
@@ -187,7 +171,7 @@ class cartManagerMongodb{
 
     async UpdateDataCart(cartId, products) {
       try {
-        const cart = await this.getCartById(cartId);
+        const cart = await this.cartsModel.findById(cartId);
     
         if (!cart) {
           console.log(`No se encontró el carrito con ID ${cartId}.`);
@@ -221,21 +205,23 @@ class cartManagerMongodb{
     
     async updateQuantityOfProduct(cartId, productId, quantity) {
       try {
-        const cart = await this.getCartById(cartId);
-    
+        const cart = await this.cartsModel.findById(cartId);
         if (!cart) {
           console.log(`No se encontró el carrito con ID ${cartId}.`);
           return { success: false, message: "El carrito no existe" };
         }
     
-        const existProduct = await productManagerMdb.getProductById(productId);
-    
-        if (existProduct === -1) {
-          console.log(`No se encontró el producto con ID ${productId} en el carrito.`);
-          return { success: false, message: "El producto no existe en el carrito" };
-        }else{
-          existProduct.quantity = quantity;
-        }
+      const existingProduct = cart.products.find((products) => products.productId._id.toString() === productId);
+      if (!existingProduct) {
+        throw new Error('Producto no encontrado en el carrito');
+      }
+      if (!quantity) {
+        throw new Error('Ingresar el valor quantity es obligatorio!');
+      }
+      if (quantity <= 0) {
+        throw new Error('Quantity no puede ser 0 o un número negativo!');
+      }
+      existingProduct.quantity = quantity;
     
         const updatedCart = await cart.save();
     
@@ -245,7 +231,7 @@ class cartManagerMongodb{
         }
     
         console.log(
-          `Se actualizó la cantidad del producto con ID ${productId} en el carrito con ID ${cartId}.`
+          `Se actualizó la cantidad del producto con ID ${productId} en el carrito con ID ${cartId}.` 
         );
     
         return {

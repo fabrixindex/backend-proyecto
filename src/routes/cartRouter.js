@@ -54,11 +54,8 @@ cartRouter.get("/:cid", async (req, res) => {
 
 cartRouter.post("/", async (req, res) => {
   try {
-    const { products } = req.body;
-
-    const result = await cartM_Mongo.addCart(products);
-
-    res.status(200).send({ status: "success", result });
+    const newCart = await cartM_Mongo.addCart();
+    res.status(200).send({ status: "success", cartId: newCart._id });
   } catch (error) {
     res
       .status(500)

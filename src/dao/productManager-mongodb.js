@@ -121,6 +121,7 @@ class productManagerMongodb{
             stock,
             status,
             category,
+            thumbnails,
         });
 
         return newProduct

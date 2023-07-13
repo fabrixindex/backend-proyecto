@@ -9,27 +9,26 @@ Swal.fire({
   text: "Ingresa el usuario para identificarte en el chat",
   icon: "success",
 
-  inputValidator:(value) => {
-    return !value && "Necesitas escribir un nombre de usuario para continuar!!"
+  inputValidator: (value) => {
+    return !value && "Necesitas escribir un nombre de usuario para continuar!!";
   },
 
-  allowOutsideClick: false
-
-}).then(result =>{
+  allowOutsideClick: false,
+}).then((result) => {
   user = result.value;
-  socket.emit(`authenticated`, user)
+  socket.emit(`authenticated`, user);
 });
 
-chatBox.addEventListener('keyup', evt => {
+chatBox.addEventListener("keyup", (evt) => {
   if (evt.key === "Enter") {
-      if (chatBox.value.trim().length > 0) {
-          socket.emit('message', { user: user, message: chatBox.value });
-          chatBox.value = "";
-      }
+    if (chatBox.value.trim().length > 0) {
+      socket.emit("message", { user: user, message: chatBox.value });
+      chatBox.value = "";
+    }
   }
 });
 
-socket.on(`newUserConnected`, data => {
+socket.on(`newUserConnected`, (data) => {
   if (!user) return;
   Swal.fire({
     toast: true,
@@ -37,18 +36,18 @@ socket.on(`newUserConnected`, data => {
     showConfirmButton: false,
     timer: 3000,
     title: `${data} se ha unido`,
-    icon: `success`
-  })
+    icon: `success`,
+  });
 });
 
 /*--------------------------------------------- MESSAGE LISTENER ------------------------------------------------------*/
 
-socket.on('messageLogs', data => {
-    if (!user) return;
-    let log = document.getElementById('messageLogs');
-    let messages = "";
-    data.forEach(message => {
-        messages += `${message.user} dice: ${message.message}<br/>`
-    })
-    log.innerHTML = messages;
-})
+socket.on("messageLogs", (data) => {
+  if (!user) return;
+  let log = document.getElementById("messageLogs");
+  let messages = "";
+  data.forEach((message) => {
+    messages += `${message.user} dice: ${message.message}<br/>`;
+  });
+  log.innerHTML = messages;
+});

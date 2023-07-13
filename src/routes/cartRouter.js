@@ -5,7 +5,7 @@ import cartManagerMongodb from "../dao/cartManager-mongodb.js";
 const cartRouter = Router();
 //const cartM = new cartManager("./cart.json");
 
-const cartM_Mongo = new cartManagerMongodb
+const cartM_Mongo = new cartManagerMongodb();
 
 //ADD PRODUCT TO CART
 
@@ -17,15 +17,23 @@ cartRouter.post("/:cid/producto/:pid", async (req, res) => {
     const productId = pid;
     const quantity = req.body.quantity ? parseInt(req.body.quantity) : 1;
 
-    const result = await cartM_Mongo.addProductToCart(cartId, productId, quantity);
+    const result = await cartM_Mongo.addProductToCart(
+      cartId,
+      productId,
+      quantity
+    );
     if (!result.success) {
-      return res.status(404).json({ status: "failed", message: result.message });
+      return res
+        .status(404)
+        .json({ status: "failed", message: result.message });
     }
 
     res.status(200).json({ message: result.message });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "Ocurrió un error al agregar el producto al carrito" });
+    res
+      .status(500)
+      .json({ error: "Ocurrió un error al agregar el producto al carrito" });
   }
 });
 
@@ -63,14 +71,13 @@ cartRouter.post("/", async (req, res) => {
   }
 });
 
-//DELETE CART 
+//DELETE CART
 
 cartRouter.delete("/:cid", async (req, res) => {
   try {
     const cartId = req.params.cid;
 
     const result = await cartM_Mongo.DeleteCartById(cartId);
-
 
     if (result.deletedCount === 0) {
       return res.status(404).json({
@@ -83,7 +90,6 @@ cartRouter.delete("/:cid", async (req, res) => {
       status: true,
       message: "carrito eliminado exitosamente",
     });
-
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -190,25 +196,32 @@ cartRouter.put("/:cid/product/:pid", async (req, res) => {
     const cartId = cid;
     const productId = pid;
 
-    const updateQuantityResult = await cartM_Mongo.updateQuantityOfProduct(cartId, productId, quantity);
+    const updateQuantityResult = await cartM_Mongo.updateQuantityOfProduct(
+      cartId,
+      productId,
+      quantity
+    );
 
     if (updateQuantityResult.success) {
       res.status(200).json({
         status: "success",
-        message: "Se actualizó la cantidad del producto en el carrito exitosamente.",
+        message:
+          "Se actualizó la cantidad del producto en el carrito exitosamente.",
         cart: updateQuantityResult.finalCart,
       });
     } else {
       res.status(404).json({
         status: "error",
-        message: "No se pudo actualizar la cantidad del producto en el carrito.",
+        message:
+          "No se pudo actualizar la cantidad del producto en el carrito.",
       });
     }
   } catch (error) {
     console.log(error);
     res.status(500).json({
       status: "error",
-      message: "Ocurrió un error al actualizar la cantidad del producto en el carrito.",
+      message:
+        "Ocurrió un error al actualizar la cantidad del producto en el carrito.",
     });
   }
 });

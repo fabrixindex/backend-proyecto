@@ -5,14 +5,14 @@ import productManagerMongodb from "../dao/productManager-mongodb.js";
 const router = Router();
 //const productM = new ProductManager("./products.json");
 
-const productM_Mongo = new productManagerMongodb
+const productM_Mongo = new productManagerMongodb();
 
 //GET PRODUCT BY ID
 
 router.get("/:pid", async (req, res) => {
   try {
     const productId = req.params.pid;
-    
+
     //const product = await productM.getProductById(Number(productId)); /*PRODUCT MANAGER (FS)*/
 
     const product = await productM_Mongo.getProductById(productId);
@@ -39,17 +39,26 @@ router.get("/", async (req, res) => {
 
     //const productos = await productM.getProduct(); /*PRODUCT MANAGER (FS)*/
 
-    const baseUrl = `${req.protocol}://${req.get('host')}${req.originalUrl.split('?')[0]}`;
+    const baseUrl = `${req.protocol}://${req.get("host")}${
+      req.originalUrl.split("?")[0]
+    }`;
 
-    const productos = await productM_Mongo.getAllproducts(limit, page, sort, category, available, baseUrl);
+    const productos = await productM_Mongo.getAllproducts(
+      limit,
+      page,
+      sort,
+      category,
+      available,
+      baseUrl
+    );
 
-    res.send({status: "success", products: productos})
+    res.send({ status: "success", products: productos });
   } catch (error) {
     res
       .status(500)
       .send({ status: "error", message: "Error al obtener los productos" });
   }
-}); 
+});
 
 //ADD PRODUCT
 
@@ -65,9 +74,9 @@ router.post("/new-product", async (req, res) => {
       return res.status(400).json({
         message: "El código del producto ya existe. No se puede repetir.",
       });
-    };
+    }
 
-    const newProduct = await productM_Mongo.createProduct(newProductData)
+    const newProduct = await productM_Mongo.createProduct(newProductData);
 
     //const result = await productM.addProduct /*PRODUCT MANAGER (FS)*/
     //const productos = await productM.getProduct(); /*PRODUCT MANAGER (FS)*/
@@ -123,11 +132,10 @@ router.put("/:pid", async (req, res) => {
 router.delete("/:pid", async (req, res) => {
   try {
     const productId = req.params.pid;
-    
+
     //const result = await productM.deleteProduct(Number(productId)); /*PRODUCT MANAGER (FS)*/
 
     const result = await productM_Mongo.DeleteProductById(productId);
-
 
     if (result.deletedCount === 0) {
       return res.status(404).json({

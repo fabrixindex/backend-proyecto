@@ -50,19 +50,20 @@ class productManagerMongodb{
         
              let navLinks = {};
 
-      if (baseUrl) {
-        const sortOptions = ['asc', 'desc'];
-        const availableOptions = ['true', 'false'];
-        const sortQuery = sort && sortOptions.includes(sort.toLowerCase()) ? `&sort=${sort}` : '';
-        const categoryQuery = category ? `&category=${encodeURIComponent(category)}` : '';
-        const availableQuery = available && availableOptions.includes(available.toLowerCase()) ? `&available=${available}` : '';
-        navLinks = {
-            firstLink: products.totalPages > 1? `${baseUrl}?limit=${limit}&page=1${sortQuery}${categoryQuery}${availableQuery}` : null,
-            prevLink: products.hasPrevPage ? `${baseUrl}?limit=${limit}&page=${products.prevPage}${sortQuery}${categoryQuery}${availableQuery}` : null,
-            nextLink: products.hasNextPage ? `${baseUrl}?limit=${limit}&page=${products.nextPage}${sortQuery}${categoryQuery}${availableQuery}` : null,
-            lastLink: products.totalPages > 1? `${baseUrl}?limit=${limit}&page=${products.totalPages}${sortQuery}${categoryQuery}${availableQuery}` : null
-        };
-      }
+             if (baseUrl) {
+              const sortOptions = ['asc', 'desc'];
+              const availableOptions = ['true', 'false'];
+              const sortQuery = sort && sortOptions.includes(sort.toLowerCase()) ? `&sort=${sort}` : '';
+              const categoryQuery = category ? `&category=${encodeURIComponent(category)}` : '';
+              const availableQuery = available && availableOptions.includes(available.toLowerCase()) ? `&available=${available}` : '';
+              navLinks = {
+                firstLink: products.totalPages > 1 ? `${baseUrl}?limit=${limit}&page=1${sortQuery}${categoryQuery}${availableQuery}` : null,
+                prevLink: products.hasPrevPage ? `${baseUrl}?limit=${limit}&page=${products.prevPage}${sortQuery}${categoryQuery}${availableQuery}` : null,
+                nextLink: products.hasNextPage ? `${baseUrl}?limit=${limit}&page=${products.nextPage}${sortQuery}${categoryQuery}${availableQuery}` : null,
+                lastLink: products.totalPages > 1 ? `${baseUrl}?limit=${limit}&page=${products.totalPages}${sortQuery}${categoryQuery}${availableQuery}` : null
+              };
+            }
+
         const productsWithLinks = { ...products, ...navLinks };
         return productsWithLinks;
         }catch(error){
@@ -72,7 +73,7 @@ class productManagerMongodb{
 
     async getProductById(id){
         try{
-            const productData = await this.productsModel.findOne({ _id: id})
+            const productData = await this.productsModel.find({ _id: id})
 
             if (!productData) {
                 return null;
@@ -84,51 +85,14 @@ class productManagerMongodb{
         }
     };
 
-    async createProduct(    
-        title,
-        description,
-        price,
-        thumbnails = [],
-        code,
-        stock,
-        status = true,
-        category
-        ) {
-        try {
-            if (
-                !title ||
-                !description ||
-                !price ||
-                !code ||
-                !stock ||
-                !status ||
-                !category
-              )
-                return `Todos los campos son obligatorios. El producto ${title} tiene un campo vacío!`;
-        
-        const allProducts = await this.getAllproducts();
-
-        /*--------------------------- EVITAR REPETICION DE PRODUCTOS ---------------------------------------*/
-        const findCode = allProducts.find((product) => product?.code === code);
-        if (findCode)
-        return `El Codigo del producto ya existe. No se puede repetir!`;
-
-        const newProduct = await this.productsModel.create({
-            title,
-            description,
-            price,
-            code,
-            stock,
-            status,
-            category,
-            thumbnails,
-        });
-
-        return newProduct
-        }catch(error){
-            console.log(error);
-        }
-    };
+    async createProduct(newProductData) {
+      try {
+        const newProduct = await this.productsModel.create(newProductData);
+        return newProduct;
+      } catch (error) {
+        console.log(error);
+      }
+    };    
 
     async updateProduct(id, updateBodyProduct){
         try{
@@ -138,15 +102,6 @@ class productManagerMongodb{
                 return `No se encontró el producto con ID ${id}.`;
               };
             
-              //const updatedProduct = { ...updateProduct, ...updateBodyProduct };
-              //const allProducts = await this.getAllproducts();
-
-              //const updatedProducts = allProducts.map((product) => {
-                //if (product.id === id) {
-                  //return updatedProducts;
-                //}
-                //return product;
-              //});
               return {
                 message: `Se ha actualizado el producto con ID ${id}.`,
                 product: updatedProduct,

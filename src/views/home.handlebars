@@ -3,6 +3,7 @@
   <ul>
     {{#each products.products}}
     <li>
+      <!-- Agregar IMG -->
       <h3>{{this.title}}</h3>
       <p>{{this.description}}</p>
       <p>Precio: ${{this.price}}</p>
@@ -12,13 +13,13 @@
   </ul>
   <div>
     {{#if products.hasPrevPage}}
-    <a href="/productos?page={{products.prevLink}}">Anterior</a>
+    <a href="{{products.prevLink}}">Anterior</a>
     {{/if}}
     
     <span>Página {{products.page}} de {{products.totalPages}}</span>
       
     {{#if products.hasNextPage}}
-      <a href="/productos?page={{products.nextLink}}">Siguiente</a>
+      <a href="{{products.nextLink}}">Siguiente</a>
     {{/if}}
   </div>
 </div>

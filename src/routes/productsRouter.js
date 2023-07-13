@@ -1,7 +1,6 @@
 import { Router } from "express";
 //import ProductManager from "../dao/productManager.js";
 import productManagerMongodb from "../dao/productManager-mongodb.js";
-//import productsModels from "../dao/models/products.models.js";
 
 const router = Router();
 //const productM = new ProductManager("./products.json");
@@ -56,56 +55,31 @@ router.get("/", async (req, res) => {
 
 router.post("/new-product", async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      price,
-      thumbnails,
-      code,
-      stock,
-      status,
-      category,
-    } = req.body;
+    const newProductData = req.body;
 
-    if (
-      !title ||
-      !description ||
-      !price ||
-      !code ||
-      !stock ||
-      !category
-    ) {
-      return res
-        .status(400)
-        .send({
-          message: `Todos los campos son obligatorios. El producto tiene un campo vacío!`,
-          error: `missing fields`,
-        });
-    }
+    const allProducts = await productM_Mongo.getAllproducts();
+    const findCode = allProducts.products.find(
+      (product) => product.code === newProductData.code
+    );
+    if (findCode) {
+      return res.status(400).json({
+        message: "El código del producto ya existe. No se puede repetir.",
+      });
+    };
+
+    const newProduct = await productM_Mongo.createProduct(newProductData)
 
     //const result = await productM.addProduct /*PRODUCT MANAGER (FS)*/
-    
-    const result = await productM_Mongo.createProduct(
-      title,
-      description,
-      price,
-      thumbnails,
-      code,
-      stock,
-      status,
-      category
-    );
-
     //const productos = await productM.getProduct(); /*PRODUCT MANAGER (FS)*/
 
-    if (result) {
-      return res.status(200).json({
-        message: "Producto agregado!",
-        product: result,
+    if (newProduct) {
+      return res.status(201).json({
+        message: "Producto agregado exitosamente",
+        product: newProduct,
       });
     } else {
       return res.status(500).json({
-        message: "Error al agregar el producto",
+        message: "Error al agregar el producto en la base de datos",
       });
     }
   } catch (error) {

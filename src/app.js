@@ -42,7 +42,7 @@ const io = new Server(httpServer)
 
 /*-------------------------------------- ROUTES --------------------------------------------*/
 
-app.use("/api/productos", productsRouter); 
+app.use("/api/products", productsRouter); 
 app.use("/api/carts", cartRouter);
 app.use("/", messagesRouter);
 app.use("/", viewRouter);

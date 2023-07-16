@@ -1,4 +1,10 @@
 <div>
+  <div>
+  <p>Bienvenido!</p>
+  <p>{{user.name}} {{#if isAdmin}}<p>Admin ✅</p>{{/if}}</p>
+  <p>{{user.email}}</p>
+  </div>
+  <button id="yourProfile">Tu perfil</button>
   <h1>Listado de productos</h1>
   <ul>
     {{#each products.products}}
@@ -28,3 +34,4 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/home.js"></script>
 <script src="/js/addToCart.js"></script> 
+<script src="/js/yourProfile.js"></script>

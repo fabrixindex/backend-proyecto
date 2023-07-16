@@ -1,5 +1,5 @@
-import cartsModel from "./models/carts.models.js";
-import productManagerMongodb from "./productManager-mongodb.js";
+import cartsModel from "../models/carts.models.js";
+import productManagerMongodb from "../managers/productManager-mongodb.js";
 
 const productManagerMdb = new productManagerMongodb();
 

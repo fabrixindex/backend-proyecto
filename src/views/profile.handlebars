@@ -1,0 +1,10 @@
+<div>
+    <h1>Tu perfil (sin datos sensibles)</h1>
+    <p>{{user.name}}{{#if isAdmin}}<p>Admin ✅</p>{{/if}}</p>
+    <p>{{user.email}}</p>
+    <p>{{user.age}}</p>
+    <button id="backToProducts">Volver</button>
+    <a href="/api/sessions/logout"><button>Cerrar sesión</button></a>
+</div>
+
+<script src="/js/backToProducts.js"></script>

@@ -34,7 +34,11 @@ viewRouter.get("/profile", async (req, res) => {
     user: req.session.user,
     isAdmin: isAdmin
   }); 
-}); 
+});
+
+viewRouter.get("/resetPassword", async (req,res) => {
+  res.render("resetPassword")
+});
 
 /*-------------------------------------------------------------------------------------------------------------------------*/
 /*-------------------------------------------------- PRODUCTS ROUTES ------------------------------------------------------*/

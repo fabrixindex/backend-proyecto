@@ -28,12 +28,15 @@ viewRouter.get("/login", publicAccess, async (req, res) => {
 });
 
 viewRouter.get("/profile", async (req, res) => {
-  const isAdmin = req.session.user.role === 'admin';
-  
-  res.render("profile", {
-    user: req.session.user,
-    isAdmin: isAdmin
-  }); 
+  try{
+    const isAdmin = req.session.user.role === 'admin';
+    res.render("profile", {
+      user: req.session.user,
+      isAdmin: isAdmin
+    }); 
+  }catch(error){
+    consolo.log(error)
+  };
 });
 
 viewRouter.get("/resetPassword", async (req,res) => {
@@ -55,8 +58,7 @@ viewRouter.get("/", privateAccess, async (req, res) => {
 
 viewRouter.get("/realtimeproducts", privateAccess, async (req, res) => {
   try {
-    const products = await productM.getAllproduct();
-    res.render("realTimeProducts", { products });
+    res.render("realTimeProducts");
   } catch (error) {
     res
       .status(500)
@@ -107,5 +109,12 @@ viewRouter.get("/cartsView/:cartId", privateAccess, async (req, res) => {
   }
 });
 /*-------------------------------------------------------------------------------------------------------------------------*/
+viewRouter.get('/webchat', async (req,res) => {
+  try{
+    res.render('chat');
+  }catch(error){
+    console.log(error)
+  }
+});
 
 export default viewRouter;

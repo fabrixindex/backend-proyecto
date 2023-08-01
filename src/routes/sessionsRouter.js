@@ -115,4 +115,29 @@ sessionRouter.get("/githubFailure", (req, res) => {
   res.status(400).send({ status: 0, msg: "Github authentication failure" });
 });
 
+sessionRouter.get(
+  "/current", 
+  (req, res) => {
+    try {
+  
+      if (!req.user) {
+        return res.status(401).send({ status: "error", error: "User not authenticated" });
+      }
+
+      res.send({
+        status: "success",
+        user: {
+          name: `${req.user.first_name} ${req.user.last_name}`,
+          email: req.user.email,
+          age: req.user.age,
+          role: req.user.userRole,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+
 export default sessionRouter;

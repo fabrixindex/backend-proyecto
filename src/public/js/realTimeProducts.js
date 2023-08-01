@@ -7,7 +7,7 @@ socket.on("emmit-products", productos => {
       
     productos.forEach(producto => {
       
-      const li = document.createElement("li");
+      const productCard = document.createElement("div");
       
       const titleElement = document.createElement("h3");
       titleElement.textContent = producto.title;
@@ -23,7 +23,7 @@ socket.on("emmit-products", productos => {
       li.appendChild(descriptionElement);
       li.appendChild(priceElement);
   
-      productList.appendChild(li);
+      productList.appendChild(productCard);
     });
   });
   /*---------------------------------------------------------------------------------------------------------------------*/

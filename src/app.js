@@ -12,7 +12,7 @@ import __dirname from "./utils/utils.js";
 import { Server } from "socket.io";
 import mongoose from "mongoose";
 import displayRoutes from "express-routemap";
-import messagesModel from "./dao/models/messages.models.js";
+import { chat, productsUpdated } from "./utils/socketUtils.js";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import MongoStore from "connect-mongo";
@@ -97,24 +97,13 @@ app.use(express.static(`${__dirname}/public`));
 
 /* ----------------------------------------------------------------------------------------------------------------------- */
 /*------------------------------------------- CONFIGURACION SOCKET SERVER -------------------------------------------------*/
+app.set('io', io);
 
 io.on("connection", (socket) => {
   console.log("Cliente conectado");
 
-  socket.on("message", (data) => {
-    const newMessage = new messagesModel({
-      user: data.user,
-      message: data.message,
-    });
-    newMessage
-      .save()
-      .then(() => {
-        console.log("Mensaje guardado en la base de datos");
-      })
-      .catch((error) => {
-        console.log("Error al guardar el mensaje: " + error);
-      });
-  });
+  chat(socket, io);
+  productsUpdated(io);
 
   socket.on(`authenticated`, (data) => {
     socket.broadcast.emit(`newUserConnected`, data);
@@ -127,3 +116,5 @@ io.on("connection", (socket) => {
 export default { app, io };
 
 /* ----------------------------------------------- FIN DEL CÓDIGO -------------------------------------------------------- */
+
+//AGREGAR ALERTA DE QUE EL USUARIO SE REGISTRO

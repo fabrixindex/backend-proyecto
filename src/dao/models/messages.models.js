@@ -11,6 +11,10 @@ const schema = new mongoose.Schema({
     type: String,
     require: true,
   },
+  date: {
+    type: Date,
+    default: Date.now()
+  },
 });
 
 const messagesModel = mongoose.model(collection, schema);

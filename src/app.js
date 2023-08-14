@@ -5,7 +5,7 @@ import express from "express";
 import productsRouter from "../src/routes/productsRouter.js";
 import cartRouter from "./routes/cartRouter.js";
 import viewRouter from "./routes/viewRouter.js";
-import messagesRouter from "./routes/messages.js";
+import messagesRouter from "./routes/messagesRouter.js";
 import sessionsRouter from "./routes/sessionsRouter.js";
 import handlebars from "express-handlebars";
 import __dirname from "./utils/utils.js";
@@ -18,7 +18,12 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 import passport from "passport";
 import initializePassport from "./config/passport.config.js";
+import config from "./config/dotenv.config.js";
 
+console.log({PUERTO: config.PORT}) //SIGUE SALIENDO UNDEFINED --- ARREGLAR 😭
+console.log(config.MONGO_USER)
+console.log(config.MONGO_PASSWORD)
+console.log(config.SESSION_SECRET)
 /* ----------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------- CONFIGURACION EXPRESS ------------------------------------------------------*/
 
@@ -68,7 +73,7 @@ app.use(passport.session());
 
 const httpServer = app.listen(8080, () => {
   displayRoutes(app);
-  console.log("Servidor escuchando en el puerto 8080");
+  console.log('Servidor escuchando en el puerto 8080'); 
 });
 
 /* ----------------------------------------------------------------------------------------------------------------------- */

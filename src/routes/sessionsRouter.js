@@ -2,6 +2,7 @@ import { Router } from "express";
 import userModel from "../dao/models/user.model.js";
 import { createHash } from "../utils/utils.js";
 import passport from "passport";
+import userDTO from "../dto/users.dto.js"
 
 const sessionRouter = Router();
 
@@ -126,12 +127,7 @@ sessionRouter.get(
 
       res.send({
         status: "success",
-        user: {
-          name: `${req.user.first_name} ${req.user.last_name}`,
-          email: req.user.email,
-          age: req.user.age,
-          role: req.user.userRole,
-        },
+        payload: new userDTO(user)
       });
     } catch (error) {
       console.log(error);

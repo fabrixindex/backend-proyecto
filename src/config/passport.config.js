@@ -3,6 +3,11 @@ import local from "passport-local";
 import userModel from "../dao/models/user.model.js";
 import { createHash, isValidPassword } from "../utils/utils.js";
 import GitHubStrategy from "passport-github2";
+import variables from "../config/dotenv.config.js"
+
+const CLIENT_GITHUB_ID = variables.CLIENT_GITHUB_id;
+const CLIENT_GITHUB_SECRET = variables.CLIENT_GITHUB_secret;
+const CALL_BACK_GITHUB_URL = variables.CALL_BACK_GITHUB_url;
 
 const LocalStrategy = local.Strategy;
 
@@ -71,9 +76,9 @@ const initializePassport = () => {
     "github",
     new GitHubStrategy(
       {
-        clientID: "Iv1.6fc66a7c71c28f84",
-        clientSecret: "2717cea459b668017fa43af2dedca106aec722e9",
-        callBackURL: "http://localhost:8080/api/sessions/githubcallback",
+        clientID: `${CLIENT_GITHUB_ID}`,
+        clientSecret: `${CLIENT_GITHUB_SECRET}`,
+        callBackURL: `${CALL_BACK_GITHUB_URL}`,
       },
       async (accessToken, refreshToken, profile, done) => {
         try {

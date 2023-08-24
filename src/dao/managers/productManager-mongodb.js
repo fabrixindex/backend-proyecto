@@ -53,43 +53,8 @@ class productManagerMongodb {
           totalDocs: "totalProducts",
         },
       });
-
-      let navLinks = {};
-
-      if (baseUrl) {
-        const sortOptions = ["asc", "desc"];
-        const availableOptions = ["true", "false"];
-        const sortQuery =
-          sort && sortOptions.includes(sort.toLowerCase())
-            ? `&sort=${sort}`
-            : "";
-        const categoryQuery = category
-          ? `&category=${encodeURIComponent(category)}`
-          : "";
-        const availableQuery =
-          available && availableOptions.includes(available.toLowerCase())
-            ? `&available=${available}`
-            : "";
-        navLinks = {
-          firstLink:
-            products.totalPages > 1
-              ? `${baseUrl}?limit=${limit}&page=1${sortQuery}${categoryQuery}${availableQuery}`
-              : null,
-          prevLink: products.hasPrevPage
-            ? `${baseUrl}?limit=${limit}&page=${products.prevPage}${sortQuery}${categoryQuery}${availableQuery}`
-            : null,
-          nextLink: products.hasNextPage
-            ? `${baseUrl}?limit=${limit}&page=${products.nextPage}${sortQuery}${categoryQuery}${availableQuery}`
-            : null,
-          lastLink:
-            products.totalPages > 1
-              ? `${baseUrl}?limit=${limit}&page=${products.totalPages}${sortQuery}${categoryQuery}${availableQuery}`
-              : null,
-        };
-      }
-
-      const productsWithLinks = { ...products, ...navLinks };
-      return productsWithLinks;
+      
+      return products
     } catch (error) {
       console.log(error);
     }
@@ -98,11 +63,6 @@ class productManagerMongodb {
   async getProductById(id) {
     try {
       const productData = await this.productsModel.find({ _id: id });
-
-      if (!productData) {
-        return null;
-      }
-
       return productData;
     } catch (error) {
       console.log(error);
@@ -126,10 +86,6 @@ class productManagerMongodb {
         { new: true }
       );
 
-      if (!updatedProduct) {
-        return `No se encontró el producto con ID ${id}.`;
-      }
-
       return {
         message: `Se ha actualizado el producto con ID ${id}.`,
         product: updatedProduct,
@@ -142,11 +98,6 @@ class productManagerMongodb {
   async DeleteProductById(id) {
     try {
       const productDeleted = await this.productsModel.deleteOne({ _id: id });
-
-      if (productDeleted === 0) {
-        return `No se encontró el producto con ID ${id}.`;
-      }
-
       return productDeleted;
     } catch (error) {
       console.log(error);

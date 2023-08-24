@@ -18,12 +18,8 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 import passport from "passport";
 import initializePassport from "./config/passport.config.js";
-import config from "./config/dotenv.config.js";
+import variables from "./config/dotenv.config.js";
 
-console.log({PUERTO: config.PORT}) //SIGUE SALIENDO UNDEFINED --- ARREGLAR 😭
-console.log(config.MONGO_USER)
-console.log(config.MONGO_PASSWORD)
-console.log(config.SESSION_SECRET)
 /* ----------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------- CONFIGURACION EXPRESS ------------------------------------------------------*/
 
@@ -32,10 +28,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /* ----------------------------------------------------------------------------------------------------------------------- */
+/*----------------------------------------------- VARIABLES DE ENTORNO ----------------------------------------------------*/
+const PORT = variables.port;
+const MONGO_USER = variables.MONGO_user;
+const MONGO_PASSWORD = variables.MONGO_password;
+const SESSION_SECRET = variables.SESSION_secret;
+const MONGO_HOST = variables.MONGO_host;
+const MONGO_COLLECTION = variables.MONGO_collection;
+
+/* ----------------------------------------------------------------------------------------------------------------------- */
 /*--------------------------------------------- CONFIGURACION MONGOOSE ----------------------------------------------------*/
 
 const MONGO_URL =
-  "mongodb+srv://fabrixindex:nskfOn2pxiL7AipW@cluster0.thbcth0.mongodb.net/ecommerce";
+`mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_COLLECTION}`;
 
 mongoose
   .connect(MONGO_URL, {
@@ -60,7 +65,7 @@ app.use(
       mongoUrl: MONGO_URL,
       ttl: 100,
     }),
-    secret: "session-Secret",
+    secret: `${SESSION_SECRET}`,
     resave: false,
     saveUninitialized: false,
   }));
@@ -71,9 +76,9 @@ app.use(passport.session());
 /* ----------------------------------------------------------------------------------------------------------------------- */
 /*----------------------------------------------- SERVIDOR HTTP -----------------------------------------------------------*/
 
-const httpServer = app.listen(8080, () => {
+const httpServer = app.listen(PORT, () => {
   displayRoutes(app);
-  console.log('Servidor escuchando en el puerto 8080'); 
+  console.log(`Servidor escuchando en el puerto ${PORT}`); 
 });
 
 /* ----------------------------------------------------------------------------------------------------------------------- */

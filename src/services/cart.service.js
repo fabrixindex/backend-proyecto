@@ -1,8 +1,11 @@
 import cartDao from "../dao/managers/cartManager-mongodb.js"
+//import cartsRepository from "../repositories/carts.repository.js";
+import ticketsService from "./tickets.service.js";
 
 export class cartService {
     constructor() {
         this.dao = new cartDao();
+        this.ticketService = new ticketsService();
     };
 
     addCart() {
@@ -35,5 +38,13 @@ export class cartService {
 
     updateQuantityOfProduct(cartId, productId, quantity) {
         return this.dao.updateQuantityOfProduct(cartId, productId, quantity);
-    }
+    };
+
+    checkoutCart = async (cartId, purchaser) => {
+        try{
+
+        }catch(error){
+            
+        }
+    };
 };

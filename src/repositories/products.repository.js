@@ -1,8 +1,8 @@
-export default class productsRepository {
+export default class ProductsRepository {
     
-    constructor(dao){
+    constructor(dao) {
         this.dao = dao;
-    };
+    } 
 
     getAllProducts = async (
         limit = 10,

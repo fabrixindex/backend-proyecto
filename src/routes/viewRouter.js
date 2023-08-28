@@ -1,11 +1,7 @@
 import { Router } from "express";
-//import ProductManager from "../dao/productManager.js";
-import productManagerMongodb from "../dao/managers/productManager-mongodb.js";
-import cartManagerMongodb from "../dao/managers/cartManager-mongodb.js";
+import { register, login, profile, resetPassword, staticProducts, realtimeproducts, products, carts, webChat } from "../controllers/view.controller.js";
 
 const viewRouter = Router();
-const productM = new productManagerMongodb();
-const cartM = new cartManagerMongodb();
 
 /*------------------------------------------- PUBLIC AND PRIVATE ACCESS ----------------------------------------------------*/
 const publicAccess = (req, res, next) => {
@@ -18,103 +14,19 @@ const privateAccess = (req, res, next) => {
 };
 /*--------------------------------------------------------------------------------------------------------------------------*/
 /*---------------------------------------------- LOGING ROUTES -------------------------------------------------------------*/
-
-viewRouter.get("/register", publicAccess, async (req, res) => {
-  res.render("register");
-});
-
-viewRouter.get("/login", publicAccess, async (req, res) => {
-  res.render("login");
-});
-
-viewRouter.get("/profile", async (req, res) => {
-  try{
-    const isAdmin = req.session.user.role === 'admin';
-    res.render("profile", {
-      user: req.session.user,
-      isAdmin: isAdmin
-    }); 
-  }catch(error){
-    consolo.log(error)
-  };
-});
-
-viewRouter.get("/resetPassword", async (req,res) => {
-  res.render("resetPassword")
-});
-
+viewRouter.get("/register", publicAccess, register);
+viewRouter.get("/login", publicAccess, login);
+viewRouter.get("/profile", profile);
+viewRouter.get("/resetPassword", resetPassword);
 /*-------------------------------------------------------------------------------------------------------------------------*/
 /*-------------------------------------------------- PRODUCTS ROUTES ------------------------------------------------------*/
-viewRouter.get("/", privateAccess, async (req, res) => {
-  try {
-    const products = await productM.getAllproducts();
-    res.render("home", { products: products });
-  } catch (error) {
-    res
-      .status(500)
-      .send({ status: "error", message: "Error al obtener los productos" });
-  }
-});
-
-viewRouter.get("/realtimeproducts", privateAccess, async (req, res) => {
-  try {
-    res.render("realTimeProducts");
-  } catch (error) {
-    res
-      .status(500)
-      .send({ status: "error", message: "Error al obtener los productos" });
-  }
-});
-
-viewRouter.get("/products", privateAccess, async (req, res) => {
-  try {
-    const { limit = 10, page = 1, sort, category, available } = req.query;
-    const baseUrl = `${req.protocol}://${req.get("host")}${
-      req.originalUrl.split("?")[0]
-    }`;
-    const isAdmin = req.session.user.role === 'admin';
-
-    const products = await productM.getAllproducts(
-      limit,
-      page,
-      sort,
-      category,
-      available,
-      baseUrl
-    );
-
-    res.render("home", { products: products, user: req.session.user, isAdmin: isAdmin });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({
-      status: "error",
-      message:
-        "Error al obtener los productos. Por favor, inténtelo de nuevo más tarde.",
-    });
-  }
-});
-
+viewRouter.get("/", privateAccess, staticProducts);
+viewRouter.get("/realtimeproducts", privateAccess, realtimeproducts);
+viewRouter.get("/products", privateAccess, products);
 /*-------------------------------------------------------------------------------------------------------------------------*/
 /*------------------------------------------------- CART ROUTES -----------------------------------------------------------*/
-
-viewRouter.get("/cartsView/:cartId", privateAccess, async (req, res) => {
-  try {
-    const cartId = req.params.cartId;
-    const cart = await cartM.getCartById(cartId);
-    res.render("cart", { cart: cart });
-  } catch (error) {
-    res
-      .status(500)
-      .send({ status: "error", message: "Error al obtener el carrito" });
-  }
-});
+viewRouter.get("/cartsView/:cartId", privateAccess, carts);
 /*-------------------------------------------------------------------------------------------------------------------------*/
-viewRouter.get('/webchat', async (req,res) => {
-  try{
-    res.render('chat');
-  }catch(error){
-    console.log(error)
-  }
-});
+viewRouter.get('/webchat', webChat);
 
 export default viewRouter;

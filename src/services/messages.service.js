@@ -1,16 +1,33 @@
-import messagesDao from "../dao/managers/messagesManager.js"
-//import messagesRepository from "../repositories/messages.repository.js";
+import messagesRepository from "../repositories/messages.repository.js";
 
 export class messagesServices {
+
     constructor() {
-        this.dao = new messagesDao();
+        this.messagesRepository = new messagesRepository();
     };
 
-    getMesssages() {
-        return this.dao.getMesssages();
+    getMesssages = async() => {
+        try{
+            const messages = await messagesRepository.getMesssages();
+            return messages;
+        }catch(error){
+            console.log(error)
+        }
     };
 
-    addMesage(user, message) {
-        return this.dao.addMessage(user, message);
+    addMesage = async (user, message) => {
+        try{
+            if (!user) {
+                throw new Error('User is required');
+            };
+            if (!message) {
+                throw new Error('Message is required');
+            };
+            
+            const newMessage = await this.messagesRepository.addMessage();
+            return newMessage;
+        }catch(error){
+            console.log(error)
+        }
     };
 };

@@ -20,11 +20,6 @@ class cartManagerMongodb {
   async getCartById(id) {
     try {
       const cartData = await this.cartsModel.findById({ _id: id }).lean();
-
-      if (!cartData) {
-        throw new Error(`No se encontró el carrito con ID ${id}.`);
-      }
-
       return cartData;
     } catch (error) {
       throw new Error("Ocurrió un error al obtener el carrito por ID.");
@@ -35,32 +30,14 @@ class cartManagerMongodb {
     try {
       const cart = await this.cartsModel.findById(cartId);
 
-      if (!cart) {
-        console.log(`No se encontró el carrito con ID ${cartId}.`);
-        return { success: false, message: "Cart not exist" };
-      }
-
       const product = await productManagerMdb.getProductById(productId);
-      if (!product) {
-        console.log(`No se encontró el producto con ID ${productId}.`);
-        return { success: false, message: "Product not exist" };
-      }
+
 
       const existingProduct = cart.products.find(
         (products) => products.productId._id.toString() === productId
       );
-      if (existingProduct) {
-        existingProduct.quantity += 1;
-      } else {
-        cart.products.push({ productId: productId, quantity: 1 });
-      }
 
       const updatedCart = await cart.save();
-
-      if (!updatedCart) {
-        console.log(`Error al actualizar el carrito con ID ${cartId}.`);
-        return { success: false, message: "Failed to update cart" };
-      }
 
       console.log(
         `Producto con ID ${productId} añadido al carrito con ID ${cartId}.`
@@ -83,11 +60,6 @@ class cartManagerMongodb {
   async DeleteCartById(id) {
     try {
       const cartDeleted = await this.cartsModel.deleteOne({ _id: id });
-
-      if (cartDeleted.deletedCount === 0) {
-        return `No se encontró el carrito con ID ${id}.`;
-      }
-
       return cartDeleted;
     } catch (error) {
       console.log(error);
@@ -98,22 +70,7 @@ class cartManagerMongodb {
     try {
       const cart = await this.cartsModel.findById(cartId);
 
-      if (!cart) {
-        console.log(`No se encontró el carrito con ID ${cartId}.`);
-        return { success: false, message: "El carrito no existe" };
-      }
-
       const indexProducto = productManagerMdb.getProductById(productId);
-
-      if (indexProducto === -1) {
-        console.log(
-          `No se encontró el producto con ID ${productId} en el carrito.`
-        );
-        return {
-          success: false,
-          message: "El producto no existe en el carrito",
-        };
-      }
 
       cart.products.splice(indexProducto, 1);
 
@@ -122,11 +79,6 @@ class cartManagerMongodb {
         { products: cart.products },
         { new: true }
       );
-
-      if (!updatedCart) {
-        console.log(`Error al actualizar el carrito con ID ${cartId}.`);
-        return { success: false, message: "Error al actualizar el carrito" };
-      }
 
       console.log(
         `Producto con ID ${productId} eliminado del carrito con ID ${cartId}.`
@@ -150,19 +102,9 @@ class cartManagerMongodb {
     try {
       const cart = await this.cartsModel.findById(cartId);
 
-      if (!cart) {
-        console.log(`No se encontró el carrito con ID ${cartId}.`);
-        return { success: false, message: "El carrito no existe" };
-      }
-
       cart.products = [];
 
       const updatedCart = await cart.save();
-
-      if (!updatedCart) {
-        console.log(`Error al actualizar el carrito con ID ${cartId}.`);
-        return { success: false, message: "Error al actualizar el carrito" };
-      }
 
       console.log(
         `Se eliminaron todos los productos del carrito con ID ${cartId}.`
@@ -186,19 +128,9 @@ class cartManagerMongodb {
     try {
       const cart = await this.cartsModel.findById(cartId);
 
-      if (!cart) {
-        console.log(`No se encontró el carrito con ID ${cartId}.`);
-        return { success: false, message: "El carrito no existe" };
-      }
-
       cart.products = products;
 
       const updatedCart = await cart.save();
-
-      if (!updatedCart) {
-        console.log(`Error al actualizar el carrito con ID ${cartId}.`);
-        return { success: false, message: "Error al actualizar el carrito" };
-      }
 
       console.log(`Productos actualizados en el carrito con ID ${cartId}.`);
 
@@ -219,31 +151,14 @@ class cartManagerMongodb {
   async updateQuantityOfProduct(cartId, productId, quantity) {
     try {
       const cart = await this.cartsModel.findById(cartId);
-      if (!cart) {
-        console.log(`No se encontró el carrito con ID ${cartId}.`);
-        return { success: false, message: "El carrito no existe" };
-      }
 
       const existingProduct = cart.products.find(
         (products) => products.productId._id.toString() === productId
       );
-      if (!existingProduct) {
-        throw new Error("Producto no encontrado en el carrito");
-      }
-      if (!quantity) {
-        throw new Error("Ingresar el valor quantity es obligatorio!");
-      }
-      if (quantity <= 0) {
-        throw new Error("Quantity no puede ser 0 o un número negativo!");
-      }
+     
       existingProduct.quantity = quantity;
 
       const updatedCart = await cart.save();
-
-      if (!updatedCart) {
-        console.log(`Error al actualizar el carrito con ID ${cartId}.`);
-        return { success: false, message: "Error al actualizar el carrito" };
-      }
 
       console.log(
         `Se actualizó la cantidad del producto con ID ${productId} en el carrito con ID ${cartId}.`

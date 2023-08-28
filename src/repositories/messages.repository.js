@@ -1,11 +1,7 @@
-import { messagesDaoFactory } from "../dao/factory.js";
-
-const MessagesDaoFactory = messagesDaoFactory.getDao();
-
 export default class messagesRepository {
     
-    constructor(){
-        this.dao = MessagesDaoFactory;
+    constructor(dao){
+        this.dao = dao;
     };
 
     getMessages = async () => {

@@ -5,7 +5,7 @@ class productManagerMongodb {
     this.productsModel = productsModel;
   }
 
-  async getAllproducts(
+  async getAllProducts(
     limit = 10,
     page = 1,
     sort,
@@ -78,14 +78,22 @@ class productManagerMongodb {
     }
   }
 
-  async updateProduct(id, updateBodyProduct) {
+  async updateProduct(id, updatedFields) {
     try {
-      const updatedProduct = await this.productsModel.updateOne(
-        { _id: id },
-        updateBodyProduct,
-        { new: true }
+      const { code, price, stock, description, title } = updatedFields;
+      const updatedProduct = await this.productsModel.findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            ...(title && { title }),
+            ...(description && { description }),
+            ...(code && { code }),
+            ...(price && { price }),
+            stock: stock !== undefined ? stock : 0,
+          },
+        },
+        { new: true, runValidators: true }
       );
-
       return {
         message: `Se ha actualizado el producto con ID ${id}.`,
         product: updatedProduct,

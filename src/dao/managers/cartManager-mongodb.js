@@ -17,9 +17,9 @@ class cartManagerMongodb {
     }
   }
 
-  async getCartById(id) {
+  async getCartById(cartId) {
     try {
-      const cartData = await this.cartsModel.findById({ _id: id }).lean();
+      const cartData = await this.cartsModel.findById({ _id: cartId }).lean();
       return cartData;
     } catch (error) {
       throw new Error("Ocurrió un error al obtener el carrito por ID.");
@@ -30,36 +30,42 @@ class cartManagerMongodb {
     try {
       const cart = await this.cartsModel.findById(cartId);
 
-      const product = await productManagerMdb.getProductById(productId);
+      if (!cart) {
+        console.log(`No se encontró el carrito con ID ${cartId}.`);
+        return { success: false, message: "Cart not exist" };
+      }
 
+      const product = await productManagerMdb.getProductById(productId);
+      if (!product) {
+        console.log(`No se encontró el producto con ID ${productId}.`);
+        return { success: false, message: "Product not exist" };
+      }
 
       const existingProduct = cart.products.find(
         (products) => products.productId._id.toString() === productId
       );
 
-      const updatedCart = await cart.save();
+      if (existingProduct) {
+        existingProduct.quantity += 1;
+      } else {
+        cart.products.push({ productId: productId, quantity: 1 });
+      };
 
-      console.log(
-        `Producto con ID ${productId} añadido al carrito con ID ${cartId}.`
-      );
+      const updatedCart = await cart.save();
 
       return {
         finalCart: updatedCart,
         success: true,
-        message: "Producto añadido al carrito con éxito.",
       };
-    } catch (error) {
-      console.log(error);
-      return {
-        success: false,
-        message: "Ocurrió un error al agregar el producto al carrito.",
-      };
-    }
-  }
 
-  async DeleteCartById(id) {
+    } catch (error) {
+        console.log(error);
+    }
+  };
+
+  async DeleteCartById(cartId) {
     try {
-      const cartDeleted = await this.cartsModel.deleteOne({ _id: id });
+      const cartDeleted = await this.cartsModel.deleteOne({ _id: cartId });
       return cartDeleted;
     } catch (error) {
       console.log(error);
@@ -80,14 +86,9 @@ class cartManagerMongodb {
         { new: true }
       );
 
-      console.log(
-        `Producto con ID ${productId} eliminado del carrito con ID ${cartId}.`
-      );
-
       return {
         finalCart: updatedCart,
         success: true,
-        message: "Producto eliminado del carrito exitosamente.",
       };
     } catch (error) {
       console.log(error);
@@ -106,14 +107,9 @@ class cartManagerMongodb {
 
       const updatedCart = await cart.save();
 
-      console.log(
-        `Se eliminaron todos los productos del carrito con ID ${cartId}.`
-      );
-
       return {
         finalCart: updatedCart,
         success: true,
-        message: "Se eliminaron todos los productos del carrito exitosamente.",
       };
     } catch (error) {
       console.log(error);
@@ -132,12 +128,9 @@ class cartManagerMongodb {
 
       const updatedCart = await cart.save();
 
-      console.log(`Productos actualizados en el carrito con ID ${cartId}.`);
-
       return {
         finalCart: updatedCart,
         success: true,
-        message: "Productos actualizados en el carrito exitosamente.",
       };
     } catch (error) {
       console.log(error);
@@ -160,15 +153,9 @@ class cartManagerMongodb {
 
       const updatedCart = await cart.save();
 
-      console.log(
-        `Se actualizó la cantidad del producto con ID ${productId} en el carrito con ID ${cartId}.`
-      );
-
       return {
         finalCart: updatedCart,
         success: true,
-        message:
-          "Se actualizó la cantidad del producto en el carrito exitosamente.",
       };
     } catch (error) {
       console.log(error);

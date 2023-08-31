@@ -1,10 +1,10 @@
-import cartsRepository from "../repositories/carts.repository.js";
+import { CartsRepository } from "../repositories/index.js";
 import { productsService } from "./products.service.js";
 import ticketService from "../services/tickets.service.js"
 
 export class cartService {
     constructor() {
-        this.cartsRepository = cartsRepository;
+        this.cartsRepository = CartsRepository;
         this.productsService = new productsService();
         this.ticketService = new ticketService();
     };
@@ -18,12 +18,12 @@ export class cartService {
         }
     };
 
-    getCartById = async (id) => {
+    getCartById = async (cartId) => {
         try{
-            const cartData = await this.cartsRepository.getCartById(id);
+            const cartData = await this.cartsRepository.getCartById(cartId);
             
             if (!cartData) {
-                throw new Error(`No se encontró el carrito con ID ${id}.`);
+                throw new Error(`No se encontró el carrito con ID ${cartId}.`);
               };
 
             return cartData;
@@ -34,32 +34,8 @@ export class cartService {
 
     addProductToCart = async (cartId, productId, quantity) => {
         try{
-            const cart = await this.cartsRepository.findById(cartId);
+            const updatedCart = await this.cartsRepository.addProductToCart(cartId, productId, quantity);
 
-            if (!cart) {
-                console.log(`No se encontró el carrito con ID ${cartId}.`);
-                return { success: false, message: "Cart not exist" };
-              };
-            
-            const product = await this.productsService.getProductById(productId);
-
-            if (!product) {
-                console.log(`No se encontró el producto con ID ${productId}.`);
-                return { success: false, message: "Product not exist" };
-              };
-            
-            const existingProduct = cart.products.find(
-                (products) => products.productId._id.toString() === productId
-            );
-
-            if (existingProduct) {
-                existingProduct.quantity += 1;
-              } else {
-                cart.products.push({ productId: productId, quantity: 1 });
-              };
-            
-            const updatedCart = await this.cartsRepository.addProductToCart();
-              
             if (!updatedCart) {
                 console.log(`Error al actualizar el carrito con ID ${cartId}.`);
                 return { success: false, message: "Failed to update cart" };
@@ -69,15 +45,14 @@ export class cartService {
         }catch(error){
             console.log(error)
         }
-        return this.dao.addProductToCart(cartId, productId, quantity);
     };
 
-    DeleteCartById = async (id) => {
+    DeleteCartById = async (cartId) => {
         try{
-            const cartDeleted = await this.cartsRepository.DeleteCartById(id);
+            const cartDeleted = await this.cartsRepository.DeleteCartById(cartId);
 
             if (cartDeleted.deletedCount === 0) {
-              return `No se encontró el carrito con ID ${id}.`;
+              return `No se encontró el carrito con ID ${cartId}.`;
             };
       
             return cartDeleted;
@@ -96,25 +71,7 @@ export class cartService {
                 return { success: false, message: "El carrito no existe" };
             };
 
-            const indexProducto = productsService.getProductById(productId);
-
-            if (indexProducto === -1) {
-                console.log(
-                  `No se encontró el producto con ID ${productId} en el carrito.`
-                );
-                return {
-                  success: false,
-                  message: "El producto no existe en el carrito",
-                };
-              };
-            
-            cart.products.splice(indexProducto, 1);
-
-            const updatedCart = await this.cartsRepository.removeProductFromCart(
-                cartId,
-                { products: cart.products },
-                { new: true }
-              );
+            const updatedCart = await this.cartsRepository.removeProductFromCart(cartId, productId);
 
               if (!updatedCart) {
                 console.log(`Error al actualizar el carrito con ID ${cartId}.`);
@@ -140,7 +97,7 @@ export class cartService {
                 return { success: false, message: "El carrito no existe" };
               };
             
-            const updatedCart = await this.cartsRepository.emptyCart();
+            const updatedCart = await this.cartsRepository.emptyCart(cartId);
     
             if (!updatedCart) {
                 console.log(`Error al actualizar el carrito con ID ${cartId}.`);
@@ -164,7 +121,7 @@ export class cartService {
 
             cart.products = products;
 
-            const updatedCart = await this.cartsRepository.UpdateDataCart();
+            const updatedCart = await this.cartsRepository.UpdateDataCart(cartId, products);
 
             if (!updatedCart) {
                 console.log(`Error al actualizar el carrito con ID ${cartId}.`);
@@ -174,7 +131,6 @@ export class cartService {
             return {
                 finalCart: updatedCart,
                 success: true,
-                message: "Productos actualizados en el carrito exitosamente.",
               };
 
         }catch(error){
@@ -207,7 +163,7 @@ export class cartService {
 
               existingProduct.quantity = quantity;
 
-              const updatedCart = await this.cartsRepository.updateQuantityOfProduct()
+              const updatedCart = await this.cartsRepository.updateQuantityOfProduct(cartId, productId, quantity)
 
               if (!updatedCart) {
                 console.log(`Error al actualizar el carrito con ID ${cartId}.`);

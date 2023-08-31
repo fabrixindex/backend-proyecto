@@ -1,8 +1,8 @@
-import ticketsRepository from "../repositories/tickets.repository.js";
+import { TicketsRepository } from "../repositories/index.js";
 
 class ticketsService {
     constructor() {
-        this.ticketsRepository = ticketsRepository;
+        this.ticketsRepository = TicketsRepository;
     };
 
     ticketsValidation = async (ticket) => {

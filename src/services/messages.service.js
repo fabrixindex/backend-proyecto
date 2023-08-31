@@ -1,9 +1,9 @@
-import messagesRepository from "../repositories/messages.repository.js";
+import { MessagesRepository } from "../repositories/index.js";
 
 export class messagesServices {
 
     constructor() {
-        this.messagesRepository = new messagesRepository();
+        this.messagesRepository = MessagesRepository;
     };
 
     getMesssages = async() => {

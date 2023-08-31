@@ -1,11 +1,7 @@
-import { ticketsDaoFactory } from "../dao/factory.js";
-
-const TicketsDaoFactory = ticketsDaoFactory.getDao()
-
 export default class ticketsRepository {
 
-    constructor(){
-        this.dao = TicketsDaoFactory;
+    constructor(dao){
+        this.dao = dao;
     };
 
     createTicket = async (newData) => {

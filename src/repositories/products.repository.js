@@ -1,8 +1,8 @@
 export default class ProductsRepository {
     
-    constructor(dao) {
+    constructor(dao){
         this.dao = dao;
-    } 
+    }; 
 
     getAllProducts = async (
         limit = 10,
@@ -37,9 +37,9 @@ export default class ProductsRepository {
         }
     };
 
-    updateProduct = async (id, updateBodyProduct) => {
+    updateProduct = async (id, product) => {
         try{
-            const updatedProduct = await this.dao.updateProduct(id, updateBodyProduct);
+            const updatedProduct = await this.dao.updateProduct(id, product);
             return updatedProduct;
         }catch(error){
            console.log(error) 
@@ -48,7 +48,7 @@ export default class ProductsRepository {
 
     DeleteProductById = async (id) => {
         try{
-            const deletedProduct = await this.dao.deleteProduct(id);
+            const deletedProduct = await this.dao.DeleteProductById(id);
             return deletedProduct;
         }catch(error){
             console.log(error)

@@ -1,9 +1,10 @@
-import productsRepository from "../repositories/products.repository.js";
+import { ProductsRepository } from "../repositories/index.js";
+import { mockingProducts } from "../utils/mocks.js"
 
 export class productsService {
 
     constructor(){
-        this.productsRepository = new productsRepository();
+        this.productRepository = ProductsRepository;
     };
 
     getAllProducts = async (    
@@ -42,7 +43,7 @@ export class productsService {
                     }
                   };
 
-                  const products = await  this.productsRepository.getAllProducts(limit, page, sort, category, available);
+                  const products = await  this.productRepository.getAllProducts(limit, page, sort, category, available);
 
                   let navLinks = {};
 
@@ -87,7 +88,7 @@ export class productsService {
 
     getProductById = async (id) => {
         try{
-            const productData = await this.productsRepository.getProductById(id)
+            const productData = await this.productRepository.getProductById(id)
 
             if (!productData) {
                 return null;
@@ -102,26 +103,20 @@ export class productsService {
 
     createProduct = async (newProductData) => {
         try{
-            const newProduct = await this.productsRepository.createProduct(newProductData)
+            const newProduct = await this.productRepository.createProduct(newProductData)
             return newProduct;
         }catch(error){
             console.log(error)
         }
     };
 
-    updateProduct = async (id, updateBodyProduct) => {
+    updateProduct = async (id, updatedProductFields) => {
         try{
-            const updatedProduct = await this.productsRepository.updateProduct(
-                { _id: id },
-                updateBodyProduct,
-                { new: true }
-              );
-        
-              if (!updatedProduct) {
-                return `No se encontró el producto con ID ${id}.`;
-              };
-
-              return { product: updatedProduct };
+            const product = await this.productRepository.getProductById(id);
+            if (!product) {
+                throw new Error('Product not found');
+            }
+            return await this.productRepository.updateProduct(id, updatedProductFields);
 
         }catch(error){
             console.log(error)
@@ -130,7 +125,7 @@ export class productsService {
 
     DeleteProductById = async (id) => {
         try{
-            const productDeleted = await this.productsRepository.DeleteProductById({ _id: id });
+            const productDeleted = await this.productRepository.DeleteProductById({ _id: id }); 
 
             if (productDeleted === 0) {
               return `No se encontró el producto con ID ${id}.`;
@@ -157,6 +152,15 @@ export class productsService {
                 throw new Error('Not enough stock');
             }
             return await this.productRepository.updateProduct(productId, { stock: newStock });
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    getMockingProducts = async () => {
+        try {
+            const products = await mockingProducts();
+            return products;
         } catch (error) {
             throw error;
         }

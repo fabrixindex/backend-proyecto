@@ -1,11 +1,7 @@
-import { cartsDaoFactory } from "../dao/factory.js";
-
-const CartsDaoFactory = cartsDaoFactory.getDao()
-
 export default class cartsRepository {
 
-    constructor(){
-        this.dao = CartsDaoFactory;
+    constructor(dao){
+        this.dao = dao;
     };
 
     addCart = async () => {
@@ -17,54 +13,66 @@ export default class cartsRepository {
         }
     };
 
-    getCartById = async (id) => {
+    getCartById = async (cartId) => {
         try{
-            const cartData = await this.dao.getCartById(id);
+            const cartData = await this.dao.getCartById(cartId);
             return cartData;
         }catch(error){
             console.log(error)
         }
     };
 
-    /*addProductToCart = async (cartId, productId, quantity) => {
+    addProductToCart = async (cartId, productId, quantity) => {
         try{
-
+            const cart = await this.dao.addProductToCart(cartId, productId, quantity);
+            return cart;
         }catch(error){
-
+            console.log(error)
         }
-    };*/
+    };
 
-    DeleteCartById = async (id) => {
+    DeleteCartById = async (cartId) => {
         try{
-            const cartDeleted = await this.dao.DeleteCartById(id);
+            const cartDeleted = await this.dao.DeleteCartById(cartId);
             return cartDeleted;
         }catch(error){
             console.log(error)
         }
     };
 
-    /*removeProductFromCart = async (cartId, productId) => {
+    removeProductFromCart = async (cartId, productId) => {
         try{
-
-        }catch(error){
-
-        }
-    };*/
-
-    UpdateDataCart = async (cartId, products) => {
-        try{
-            const cart = await this.dao.UpdateDataCart(cartId, products);
-            return cart; 
+            const cartWithProductRemoved = await this.dao.removeProductFromCart(cartId, productId);
+            return cartWithProductRemoved;
         }catch(error){
             console.log(error)
         }
     };
 
-    /*updateQuantityOfProduct = async (cartId, productId, quantity) => {
+    UpdateDataCart = async (cartId, products) => {
         try{
-
+            const cartUpdated = await this.dao.UpdateDataCart(cartId, products);
+            return cartUpdated; 
         }catch(error){
             console.log(error)
         }
-    };*/
+    };
+
+    emptyCart = async (cartId) => {
+        try{
+            const cartToEmpty = await this.dao.emptyCart(cartId);
+            return cartToEmpty;
+        }catch(error){
+            console.log(error)
+        }
+    }
+
+    updateQuantityOfProduct = async (cartId, productId, quantity) => {
+        try{
+            const cartWithQuantityUpdated = await this.dao.updateQuantityOfProduct(cartId, productId, quantity);
+            return cartWithQuantityUpdated;
+        }catch(error){
+            console.log(error)
+        }
+    };
 };

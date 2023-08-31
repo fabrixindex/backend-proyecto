@@ -54,7 +54,10 @@ export const addProductToCartController = async (req, res) => {
             .json({ status: "failed", message: result.message });
         };
     
-        res.status(200).json({ message: result.message });
+        res.status(200).json({ 
+          message: "Producto añadido al carrito!",
+          payload: result,
+         });
 
     }catch (error) {
         res
@@ -69,16 +72,9 @@ export const DeleteCartByIdController = async (req, res) => {
 
         const result = await CartService.DeleteCartById(cartId);
 
-        if (result.deletedCount === 0) {
-            return res.status(404).json({
-                status: false,
-                message: "No se encontró el carrito con el ID proporcionado",
-            });
-        };
-
         return res.status(200).json({
-        status: true,
         message: "carrito eliminado exitosamente",
+        payload: result,
         });
 
     }catch (error) {
@@ -157,7 +153,10 @@ export const UpdateDataCartController = async (req, res) => {
         const response = await CartService.UpdateDataCart(cartId, newProducts);
 
         if (response.success) {
-        res.status(200).json(response);
+        res.status(200).json({
+          payload: response,
+          message: "Productos actualizados en el carrito exitosamente.",  
+        });
         } else {
         res.status(400).json(response);
         }
@@ -186,7 +185,7 @@ export const updateQuantityOfProductController = async (req, res) => {
         if (updateQuantityResult.success) {
           res.status(200).json({
             status: "success",
-            message: "Se actualizó la cantidad del producto en el carrito exitosamente.",
+            message: "Se actualizó la cantidad del producto en el carrito, exitosamente!",
             cart: updateQuantityResult.finalCart,
           });
         } else {

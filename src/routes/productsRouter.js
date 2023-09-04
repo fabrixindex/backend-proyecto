@@ -1,18 +1,19 @@
 import { Router } from "express";
 import { getAllProductsController, getProductByIdController, createProductController, updateProductController, DeleteProductByIdController, getMockingProductsController } from "../controllers/products.controller.js";
+import { authorizationAdmin, authorizationAdminOrUser } from "../utils/utils.js";
 
 const router = Router();
 
-router.get("/:pid", getProductByIdController);
+router.get('/mockingproducts', authorizationAdminOrUser, getMockingProductsController);
 
-router.get('/mockingproducts', getMockingProductsController);
+router.get("/:pid", authorizationAdminOrUser, getProductByIdController);
 
-router.get("/", getAllProductsController);
+router.get("/", authorizationAdminOrUser, getAllProductsController);
 
-router.post("/new-product", createProductController);
+router.post("/new-product", authorizationAdmin, createProductController);
 
-router.put("/:pid", updateProductController);
+router.put("/:pid", authorizationAdmin, updateProductController);
 
-router.delete("/:pid", DeleteProductByIdController);
+router.delete("/:pid", authorizationAdmin, DeleteProductByIdController);
 
 export default router;

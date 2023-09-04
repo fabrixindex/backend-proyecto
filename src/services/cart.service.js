@@ -195,7 +195,7 @@ export class cartService {
 
             for (const product of products) {
                 try {
-                    await this.productService.updateProductStock(product.product._id.toString(), -product.quantity);
+                    await this.productsService.updateProductStock(product.product._id.toString(), -product.quantity);
                     productsPurchased.push(product);
                 } catch (error) {
                     productsNotPurchased.push(product);
@@ -206,14 +206,14 @@ export class cartService {
                 throw new Error('No products were purchased');
             };
 
-            await this.emptyCart(cartId);
+            await this.cartsRepository.emptyCart(cartId);
             if (productsNotPurchased.length > 0) {
                 const newCartProducts = productsNotPurchased.map((product) => {
                     return { productId: product.product._id.toString(), quantity: product.quantity }
                 });
-                await this.addProductToCart(cartId, newCartProducts);
+                await this.cartsRepository.addProductToCart(cartId, newCartProducts);
             }
-            const remainingCart = await this.getCartById(cartId);
+            const remainingCart = await this.cartsRepository.getCartById(cartId);
 
             const totalAmount = productsPurchased.reduce((total, product) => total + (product.product.price * product.quantity), 0);
             const newTicket = await this.ticketService.createTicket({ amount: totalAmount, purchaser: purchaser });

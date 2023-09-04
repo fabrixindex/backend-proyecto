@@ -204,3 +204,22 @@ export const updateQuantityOfProductController = async (req, res) => {
     };
 };
 
+export const checkoutCartController = async (req, res) => {
+  const cartId = req.params.cartId;
+  console.log("cartController:", cartId)
+  try {
+      const purchaser = "Javier"
+
+      const purchaseCartResult = await CartService.checkoutCart(cartId, purchaser); 
+
+      res.status(201).send({ 
+        status: 1, 
+        message: 'Cart successfully purchased!', 
+        purchaseCartResult: purchaseCartResult, 
+      });
+      
+  } catch (error) {
+      console.log(error);
+  }
+};
+

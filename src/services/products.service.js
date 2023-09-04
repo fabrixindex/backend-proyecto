@@ -1,5 +1,8 @@
 import { ProductsRepository } from "../repositories/index.js";
 import { mockingProducts } from "../utils/mocks.js"
+import CustomError from "../utils/errorHandler/customError.js"
+import { generateProductIdErrorInfo } from "../utils/errorHandler/info.js";
+import EnumErrors from "../utils/errorHandler/enum.js";
 
 export class productsService {
 
@@ -91,7 +94,12 @@ export class productsService {
             const productData = await this.productRepository.getProductById(id)
 
             if (!productData) {
-                return null;
+                CustomError.createError({
+                    name: 'Product Id Error',
+                    cause: generateProductIdErrorInfo(),
+                    code: EnumErrors.INVALID_FIELDS_VALUE_ERROR,
+                    message: 'Error trying to find a product!'
+                })
             };
         
             return productData;
@@ -138,20 +146,20 @@ export class productsService {
         }
     };
     
-    updateProductStock = async (productId, quantity) => {
+    updateProductStock = async (id, quantity) => {
         try {
-            if (!quantity ) {
+            /*if (!quantity ) {
                 throw new Error('Invalid quantity');
             }
             const product = await this.productRepository.getProductById(productId);
             if (!product) {
                 throw new Error('Product not found');
-            }
+            }*/
             const newStock = product.stock + quantity;
-            if (newStock < 0) {
+            /*if (newStock < 0) {
                 throw new Error('Not enough stock');
-            }
-            return await this.productRepository.updateProduct(productId, { stock: newStock });
+            }*/
+            return await this.productRepository.updateProduct(id, { stock: newStock });
         } catch (error) {
             throw error;
         }

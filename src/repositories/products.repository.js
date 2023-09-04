@@ -52,6 +52,18 @@ export default class ProductsRepository {
             return deletedProduct;
         }catch(error){
             console.log(error)
-        };
+        }
+    };
+
+    updateProductStock = async (id, quantity) => {
+        try{
+            const product = await this.dao.getProductById(id);
+
+            const newStock = product.stock + quantity;
+
+            return await this.dao.updateProduct(id, { stock: newStock });
+        }catch(error){
+            console.log(error)
+        }
     };
 };

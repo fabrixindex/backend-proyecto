@@ -24,7 +24,7 @@ export class messagesServices {
                 throw new Error('Message is required');
             };
             
-            const newMessage = await this.messagesRepository.addMessage();
+            const newMessage = await this.messagesRepository.addMessage(user, message);
             return newMessage;
         }catch(error){
             console.log(error)

@@ -135,13 +135,15 @@ export const DeleteProductByIdController = async (req, res) => {
   };
 };
 
-export const getMockingProductsController = async (req, res) => {
-    try {
-        const products = await productsService.getMockingProducts();
+export const getMockingProductsController = (req, res) => {
+    ProductsService.getMockingProducts()
+      .then((products) => {
         res.send({ status: 1, products: products });
-    } catch (error) {
+      })
+      .catch((error) => {
         res
           .status(500)
           .send({ status: "error", message: "Error al obtener mocking Products" });
-    }
-};
+      });
+  };
+  

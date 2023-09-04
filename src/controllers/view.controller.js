@@ -39,8 +39,8 @@ export const resetPassword = async (req, res) => {
 
 export const staticProducts = async (req, res) => {
     try{
-        const ProductsService = new productsService(); 
-        const products = await ProductsService.getAllproducts();
+        const ProdServ = new productsService(); 
+        const products = await ProdServ.getAllProducts();
         res.render("home", { products: products });
     }catch(error){
         res
@@ -69,9 +69,9 @@ export const products = async (req, res) => {
 
         const isAdmin = req.session.user.role === 'admin';
 
-        const ProductsService = new productsService();
+        const ProdServ = new productsService();
 
-        const products = await ProductsService.getAllproducts(
+        const products = await ProdServ.getAllProducts(
         limit,
         page,
         sort,

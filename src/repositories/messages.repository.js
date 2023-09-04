@@ -15,7 +15,7 @@ export default class messagesRepository {
 
     addMessage = async (user, message) => {
         try {
-            const newMessage = await this.dao.addMessage( {user, message} );
+            const newMessage = await this.dao.addMessage(user, message);
             return newMessage;
         }catch(error){
             console.log(error)

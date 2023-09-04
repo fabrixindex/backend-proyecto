@@ -4,6 +4,9 @@ import userModel from "../dao/models/user.model.js";
 import { createHash, isValidPassword } from "../utils/utils.js";
 import GitHubStrategy from "passport-github2";
 import variables from "../config/dotenv.config.js"
+import CustomError from "../utils/errorHandler/customError.js";
+import { generateUserErrorInfo } from "../utils/errorHandler/info.js";
+import EnumErrors from "../utils/errorHandler/enum.js";
 
 const CLIENT_GITHUB_ID = variables.CLIENT_GITHUB_id;
 const CLIENT_GITHUB_SECRET = variables.CLIENT_GITHUB_secret;
@@ -22,6 +25,17 @@ const initializePassport = () => {
       async (req, username, password, done) => {
         try {
           const { first_name, last_name, email, age } = req.body;
+
+          if(!first_name || !last_name || !email){
+
+            console.log('error')
+            CustomError.createError({
+                name: 'User Creation Error',
+                cause: generateUserErrorInfo({first_name, last_name, email}),
+                code: EnumErrors.INVALID_TYPES_ERROR,
+                message: 'Error trying to create a new user'
+            });
+          }
 
           let user = await userModel.findOne({ email: username });
 

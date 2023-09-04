@@ -16,8 +16,8 @@ const privateAccess = (req, res, next) => {
 /*---------------------------------------------- LOGING ROUTES -------------------------------------------------------------*/
 viewRouter.get("/register", publicAccess, register);
 viewRouter.get("/login", publicAccess, login);
-viewRouter.get("/profile", profile);
-viewRouter.get("/resetPassword", resetPassword);
+viewRouter.get("/profile", privateAccess, profile);
+viewRouter.get("/resetPassword", publicAccess, resetPassword);
 /*-------------------------------------------------------------------------------------------------------------------------*/
 /*-------------------------------------------------- PRODUCTS ROUTES ------------------------------------------------------*/
 viewRouter.get("/", privateAccess, staticProducts);

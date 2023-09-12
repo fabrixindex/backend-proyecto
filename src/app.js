@@ -63,7 +63,7 @@ app.use(
   session({
     store: new MongoStore({
       mongoUrl: MONGO_URL,
-      ttl: 100,
+      ttl: 31536000,
     }),
     secret: `${SESSION_SECRET}`,
     resave: false,
@@ -126,5 +126,3 @@ io.on("connection", (socket) => {
 export default { app, io };
 
 /* ----------------------------------------------- FIN DEL CÓDIGO -------------------------------------------------------- */
-
-//AGREGAR ALERTA DE QUE EL USUARIO SE REGISTRO

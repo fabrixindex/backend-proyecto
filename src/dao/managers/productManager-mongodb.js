@@ -111,32 +111,6 @@ class productManagerMongodb {
       console.log(error);
     }
   };
-
-  async updateProductStock(id, quantity) {
-    try {
-
-      if (!quantity ) {
-        throw new Error('Invalid quantity');
-      };
-
-      const product = await this.productsModel.getProductById(id);
-
-      if (!product) {
-        throw new Error('Product not fount');
-      };
-
-      const newStock = product.stock + quantity;
-
-      if (newStock < 0){
-        throw new Error('Not enough stock!')
-      };
-
-      return await this.productsModel.updateProduct(id, { stock: newStock });
-      
-    } catch(error) {
-      console.log(error)
-    }
-  };
-}
+};
 
 export default productManagerMongodb;

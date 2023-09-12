@@ -205,10 +205,13 @@ export const updateQuantityOfProductController = async (req, res) => {
 };
 
 export const checkoutCartController = async (req, res) => {
-  const cartId = req.params.cartId;
-  console.log("cartController:", cartId)
+  
   try {
-      const purchaser = "Javier"
+      const cartId = req.params.cid;
+
+      const { name } = req.session.user;
+
+      const purchaser = `${name}`
 
       const purchaseCartResult = await CartService.checkoutCart(cartId, purchaser); 
 

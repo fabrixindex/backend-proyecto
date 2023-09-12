@@ -7,6 +7,9 @@ import variables from "../config/dotenv.config.js"
 import CustomError from "../utils/errorHandler/customError.js";
 import { generateUserErrorInfo } from "../utils/errorHandler/info.js";
 import EnumErrors from "../utils/errorHandler/enum.js";
+import { cartService } from "../services/cart.service.js";
+
+const CartService = new cartService();
 
 const CLIENT_GITHUB_ID = variables.CLIENT_GITHUB_id;
 const CLIENT_GITHUB_SECRET = variables.CLIENT_GITHUB_secret;
@@ -50,11 +53,16 @@ const initializePassport = () => {
             last_name,
             email,
             age,
-            password: createHash(password),
+            password: createHash(password), 
             userRole: isAdmin ? "admin" : "user",
           };
 
           user = await userModel.create(newUser);
+
+          const cart = await CartService.addCart();
+          user.cart = cart._id;
+          await user.save();
+
           return done(null, user);
         } catch (error) {
           return done("Error al obtener el usuario: " + error);

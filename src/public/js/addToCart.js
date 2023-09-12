@@ -5,38 +5,30 @@ const addListeners = () => {
   });
 };
 
+function getCookie() {
+  const value = `${document.cookie}`;
+  const parts = value.split('cart=');
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
 const addToCart = async (event) => {
+  console.log("Botón de agregar al carrito clickeado."); 
+
   const productId = event.target.dataset.id;
+  console.log("ID del producto:", productId);
 
-  let cartId = localStorage.getItem("cartId");
-
-  /**** OBTENCIÓN DEL cartId DE localStorage ****/
+  // Obtener el cart
+  const cartId = getCookie();
+  console.log("Valor de la cookie 'cart':", cartId); 
 
   if (!cartId) {
-    try {
-      const response = await fetch("/api/carts", {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        throw new Error("Error al crear un nuevo carrito");
-      }
-
-      const data = await response.json();
-      cartId = data.cartId;
-      localStorage.setItem("cartId", cartId);
-    } catch (error) {
-      console.error("Error al crear un nuevo carrito:", error);
-      return;
-    }
+    console.error("No se encontró el carrito en la cookie.");
+    return;
   }
 
-  /**** AGREGAR PRODUCTO AL CARRITO ****/
-
   try {
-    //NOTA: ${cartId} deberá ocupar el lugar del ID del carrito de prueba
     const response = await fetch(
-      `/api/carts/64a5ec9181ff2fa9fbe9a31a/producto/${productId}`,
+      `/api/carts/${cartId}/producto/${productId}`,
       {
         method: "POST",
         headers: {
@@ -61,4 +53,4 @@ const addToCart = async (event) => {
   }
 };
 
-addListeners();
+addListeners(); 

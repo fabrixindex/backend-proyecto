@@ -78,7 +78,7 @@ class cartManagerMongodb {
 
       const indexProducto = productManagerMdb.getProductById(productId);
 
-      cart.products.splice(indexProducto, 1);
+      cart.products.splice(indexProducto);
 
       const updatedCart = await this.cartsModel.findByIdAndUpdate(
         cartId,

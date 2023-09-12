@@ -179,7 +179,7 @@ export class cartService {
     checkoutCart = async (cartId, purchaser) => {
         try{
             const cart = await this.cartsRepository.getCartById(cartId);
-
+   
             if(!cart){
                 throw new Error("cart not found")
             };
@@ -188,35 +188,68 @@ export class cartService {
                 throw new Error("Cart is empty");
             };
 
-            const products = cart.products;
-
             const productsPurchased = [];
             const productsNotPurchased = [];
 
-            for (const product of products) {
-                try {
-                    await this.productsService.updateProductStock(product.product._id.toString(), -product.quantity);
-                    productsPurchased.push(product);
-                } catch (error) {
-                    productsNotPurchased.push(product);
+            cart.products.forEach((product) => {
+                if(product.productId.stock > product.quantity){
+                    productsPurchased.push(product)
+                    this.cartsRepository.removeProductFromCart(cartId,String(product.productId._id))
+                    
+                    //ACTUALIZAR STOCK
+                    this.productsService.updateProduct( product.productId._id,
+                        { stock: product.productId.stock - product.quantity }
+                    );
+
+                }else{
+                    productsNotPurchased.push(product)
                 }
-            };
+            }); 
 
             if (productsPurchased.length === 0) {
                 throw new Error('No products were purchased');
             };
 
-            await this.cartsRepository.emptyCart(cartId);
             if (productsNotPurchased.length > 0) {
                 const newCartProducts = productsNotPurchased.map((product) => {
                     return { productId: product.product._id.toString(), quantity: product.quantity }
                 });
                 await this.cartsRepository.addProductToCart(cartId, newCartProducts);
-            }
-            const remainingCart = await this.cartsRepository.getCartById(cartId);
+            };
 
-            const totalAmount = productsPurchased.reduce((total, product) => total + (product.product.price * product.quantity), 0);
-            const newTicket = await this.ticketService.createTicket({ amount: totalAmount, purchaser: purchaser });
+            //GENERAR CODE ALEATORIO
+            let code;
+            let isCodeUnique = false;
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            while (!isCodeUnique) {
+                code = '';
+                for (let i = 0; i < 8; i++) {
+                    code += characters.charAt(Math.floor(Math.random() * characters.length));
+                }
+                
+                const existingTicket = await this.ticketService.getTicketByCode(code);
+                if (!existingTicket) {
+                    isCodeUnique = true;
+                }
+            };
+            
+            //CALCULAR TOTAL
+            const totalAmount = productsPurchased.reduce((total, product) => {
+                const price = product.productId.price; // Acceder al precio del producto
+                const quantity = product.quantity;     // Acceder a la cantidad del producto
+            
+                return total + (price * quantity); // Realizar la suma acumulativa
+            }, 0);
+            
+            //ENVIAR DATA PARA TICKET
+            const newData = {
+                code: code,
+                amount: totalAmount,
+                purchaser: purchaser
+            }
+
+            const newTicket = await this.ticketService.createTicket(newData);
+            console.log(newTicket)
 
             if (!newTicket) {
                 throw new Error('Failed to create ticket');
@@ -226,12 +259,10 @@ export class cartService {
                 ticket: newTicket,
                 productsPurchased: productsPurchased,
                 productsNotPurchased: productsNotPurchased,
-                remainingCart: remainingCart
             }
 
             return purchaseCartResult;
-
-
+            
         }catch(error){
             console.log(error)
         }

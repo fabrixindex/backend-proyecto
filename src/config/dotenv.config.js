@@ -18,5 +18,6 @@ export default {
     TWILIO_AUTH_token: process.env.TWILIO_AUTH_TOKEN,
     TWILIO_PHONE_number: process.env.TWILIO_PHONE_NUMBER,
     persistense: process.env.PERSISTENSE,
+    environment: process.env.ENVIRONMENT,
   }; 
 

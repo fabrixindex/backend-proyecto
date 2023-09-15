@@ -36,6 +36,7 @@ export const getProductByIdController = async (req, res) => {
         if (product) {
             res.status(200).send({ status: "success", product });
           } else {
+            req.logger.error('Producto no encontrado. El ID es incorrecto!')
             res
               .status(404)
               .send({ status: "error", message: "Producto no encontrado" });
@@ -71,9 +72,11 @@ export const createProductController = async (req, res) => {
             product: newProduct,
         });
         } else {
-        return res.status(500).json({
-            message: "Error al agregar el producto en la base de datos",
-        });
+            req.logger.error('Error al crear el producto!')
+
+            return res.status(500).json({
+                message: "Error al agregar el producto en la base de datos",
+            });
         };
 
     }catch (error) {

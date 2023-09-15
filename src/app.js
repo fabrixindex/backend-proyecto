@@ -19,6 +19,8 @@ import MongoStore from "connect-mongo";
 import passport from "passport";
 import initializePassport from "./config/passport.config.js";
 import variables from "./config/dotenv.config.js";
+import { addLogger } from "./utils/logger.js";
+import logsRouter from "./routes/logsRouter.js";
 
 /* ----------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------- CONFIGURACION EXPRESS ------------------------------------------------------*/
@@ -26,6 +28,7 @@ import variables from "./config/dotenv.config.js";
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(addLogger)
 
 /* ----------------------------------------------------------------------------------------------------------------------- */
 /*----------------------------------------------- VARIABLES DE ENTORNO ----------------------------------------------------*/
@@ -93,6 +96,7 @@ app.use("/api/products", productsRouter);
 app.use("/api/carts", cartRouter);
 app.use("/", messagesRouter);
 app.use("/", viewRouter);
+app.use("/", logsRouter);
 
 app.use("/api/sessions", sessionsRouter);
 

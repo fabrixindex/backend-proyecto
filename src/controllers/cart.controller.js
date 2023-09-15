@@ -22,6 +22,7 @@ export const getCartByIdController = async (req, res) => {
         if (cart) {
           res.status(200).send({ status: "success", cart });
         } else {
+          req.logger.error('Carrito no encontrado. El ID es incorrecto!')
           res
             .status(404)
             .send({ status: "error", message: "Carrito no encontrado." });
@@ -49,6 +50,7 @@ export const addProductToCartController = async (req, res) => {
         );
 
         if (!result.success) {
+          req.logger.error('Error al agregar el producto al carrito!')
           return res
             .status(404)
             .json({ status: "failed", message: result.message });
@@ -102,6 +104,7 @@ export const removeProductFromCartController = async (req, res) => {
             cart: cartProd.finalCart,
           });
         } else {
+          req.logger.error('Error al eliminar el producto del carrito!')
           res.status(404).json({
             status: "error",
             message: "No se pudo eliminar el producto del carrito.",
@@ -131,6 +134,7 @@ export const emptyCartController = async (req, res) => {
                 cart: emptyCartResult.finalCart,
             });
         } else {
+            req.logger.error('Error al vaciar el carrito!')
             res.status(404).json({
                 status: "error",
                 message: "No se pudo vaciar el carrito.",
@@ -158,7 +162,8 @@ export const UpdateDataCartController = async (req, res) => {
           message: "Productos actualizados en el carrito exitosamente.",  
         });
         } else {
-        res.status(400).json(response);
+          req.logger.error('Error al actualizar los productos del carrito!')
+          res.status(400).json(response);
         }
     }catch (error) {
         res.status(500).json({
@@ -189,6 +194,7 @@ export const updateQuantityOfProductController = async (req, res) => {
             cart: updateQuantityResult.finalCart,
           });
         } else {
+          req.logger.error('Error al actualizar la cantidad del producto en el carrito!')
           res.status(404).json({
             status: "error",
             message:

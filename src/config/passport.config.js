@@ -47,6 +47,9 @@ const initializePassport = () => {
 
           const isAdmin =
             email === "adminCoder@coder.com" && password === "adminCod3r123";
+          
+          const isPremium =
+            email === "premiumUser@example.com" && password === "premiumPassword";
 
           const newUser = {
             first_name,
@@ -54,7 +57,7 @@ const initializePassport = () => {
             email,
             age,
             password: createHash(password), 
-            userRole: isAdmin ? "admin" : "user",
+            userRole: isAdmin ? "admin" : (isPremium ? "premium" : "user"),
           };
 
           user = await userModel.create(newUser);

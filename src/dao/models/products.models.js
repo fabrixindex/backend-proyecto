@@ -32,6 +32,10 @@ const productSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
+  owner: {
+    type: String,
+    ref: "Users",
+  },
 });
 
 productSchema.plugin(mongoosePaginate);

@@ -51,6 +51,13 @@ export const getProductByIdController = async (req, res) => {
 export const createProductController = async (req, res) => {
     try{
         const newProductData = req.body;
+        const { role, email } = req.session.user;
+    
+        if (role === "premium") {
+            newProductData.owner = email; 
+          } else {
+            newProductData.owner = "admin";
+        };
 
         const allProducts = await ProductsService.getAllProducts();
         

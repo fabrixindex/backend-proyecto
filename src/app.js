@@ -21,6 +21,7 @@ import initializePassport from "./config/passport.config.js";
 import variables from "./config/dotenv.config.js";
 import { addLogger } from "./utils/logger.js";
 import logsRouter from "./routes/logsRouter.js";
+import nodemailer from 'nodemailer';
 
 /* ----------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------- CONFIGURACION EXPRESS ------------------------------------------------------*/
@@ -38,6 +39,10 @@ const MONGO_PASSWORD = variables.MONGO_password;
 const SESSION_SECRET = variables.SESSION_secret;
 const MONGO_HOST = variables.MONGO_host;
 const MONGO_COLLECTION = variables.MONGO_collection;
+
+const MAIL_SERVICE = variables.MAIL_service;
+const MAIL_AUTH_USER = variables.MAIL_AUTH_user;
+const MAIL_AUTH_PASS = variables.MAIL_AUTH_pass;
 
 /* ----------------------------------------------------------------------------------------------------------------------- */
 /*--------------------------------------------- CONFIGURACION MONGOOSE ----------------------------------------------------*/
@@ -123,6 +128,20 @@ io.on("connection", (socket) => {
     socket.broadcast.emit(`newUserConnected`, data);
   });
 });
+
+/* ----------------------------------------------------------------------------------------------------------------------- */
+/*------------------------------------------- CONFIGURACION DE MAILING ----------------------------------------------------*/
+
+const mailConfig = {
+  service: `${MAIL_SERVICE}`,
+  port: `${PORT}`,
+  auth: {
+    user: `${MAIL_AUTH_USER}`,
+    pass: `${MAIL_AUTH_PASS}`,
+  },
+};
+
+export const transportMail = nodemailer.createTransport(mailConfig);
 
 /* ----------------------------------------------------------------------------------------------------------------------- */
 /* -------------------------------------------- EXPORTACIÓN DE APP ------------------------------------------------------- */

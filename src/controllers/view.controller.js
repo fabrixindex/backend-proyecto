@@ -93,14 +93,12 @@ export const products = async (req, res) => {
 
 export const carts = async (req, res) => {
     try{
-        const cartId = req.session.user.cart
-
-        /*const cartId = req.params.cartId;
+        const cartId = req.params.cartId;
         
         const CartService = new cartService()
-        const cart = await CartService.getCartById(cartId);*/
+        const cart = await CartService.getCartById(cartId);
 
-        res.render("cart", { cart: cartId });
+        res.render("cart", { cart: cart });
     }catch(error){
         res
         .status(500)

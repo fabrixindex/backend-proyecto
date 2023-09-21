@@ -15,9 +15,16 @@
             </ul>
         </div>
         <div>
-            <button id="checkout">Finalizar compra</button>
+            <button id="backToProducts">Volver</button>
+            <button id="checkout" data-cart="{{cart._id}}">Finalizar compra</button>
         </div>
     {{else}}
         <p>Carrito vacío</p>
+        <button id="backToProducts">Volver</button>
+        <button id="checkout" data-cart="{{cart._id}}" disabled>Finalizar compra</button>
     {{/if}}
 </div>
+
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/backToProducts.js"></script>
+<script src="/js/checkOutCart.js"></script>

@@ -5,26 +5,15 @@ const addListeners = () => {
   });
 };
 
-function getCookie() {
-  const value = `${document.cookie}`;
-  const parts = value.split('cart=');
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
-
 const addToCart = async (event) => {
-  console.log("Botón de agregar al carrito clickeado."); 
 
   const productId = event.target.dataset.id;
-  console.log("ID del producto:", productId);
-
-  // Obtener el cart
-  const cartId = getCookie();
-  console.log("Valor de la cookie 'cart':", cartId); 
+  const cartId = event.target.dataset.cart;
 
   if (!cartId) {
-    console.error("No se encontró el carrito en la cookie.");
+    console.error("No se encontró el carrito");
     return;
-  }
+  };
 
   try {
     const response = await fetch(

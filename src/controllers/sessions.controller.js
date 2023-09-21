@@ -1,7 +1,8 @@
 import userModel from "../dao/models/user.model.js";
 import { createHash } from "../utils/utils.js";
 import userDTO from "../dto/users.dto.js";
-import cookieParser from 'cookie-parser';
+import { generateResetToken } from "../utils/generateResetToken.js";
+import { transportMail } from "../app.js";
 
 export const registerController = async (req, res) => {
   try {
@@ -30,13 +31,6 @@ export const loginController = async (req, res) => {
 
     req.logger.info(`Logueo Realizado! Usuario conectado: ${req.session.user.name} 😁`)
 
-    const cartId = req.session.user.cart
-    res.cookie('cart', cartId, {
-      httpOnly: true, 
-      maxAge: 315360000000000, 
-      path: '/', 
-    });
-
     res.send({
       status: "success",
       user: req.session.user,
@@ -57,6 +51,17 @@ export const logoutController = (req, res) => {
     res.redirect("/login");
   });
 };
+
+export const sendEmailToRestartPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const codeToRestart = generateResetToken()
+
+    const sendEmail = transportMail()
+  }catch {
+    console.log(error)
+  }
+}
 
 export const restartPasswordController = async (req, res) => {
   try {

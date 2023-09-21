@@ -5,7 +5,8 @@
   <p>{{user.email}}</p>
   </div>
   <button id="yourProfile">Tu perfil</button>
-  <button id="yourCart">Tu Carrito</button>
+  <button id="yourCart" data-cart="{{user.cart}}">Tu Carrito</button>
+  <button id="chatRoom">Sala de Chat</button>
   <h1>Listado de productos</h1>
   <ul>
     {{#each products.products}}
@@ -14,8 +15,8 @@
       <h3>{{this.title}}</h3>
       <p>{{this.description}}</p>
       <p>Precio: ${{this.price}}</p>
-      <button class="addToCart" data-id={{this._id}}>Agregar al carrito</button>
     </li>
+      <button class="addToCart" data-id="{{this._id}}" data-cart="{{../user.cart}}">Agregar al carrito</button>
     {{/each}}
   </ul>
   <div>
@@ -36,3 +37,4 @@
 <script src="/js/home.js"></script>
 <script src="/js/addToCart.js"></script> 
 <script src="/js/yourProfile.js"></script>
+<script src="/js/yourCart.js"></script>

@@ -10,15 +10,15 @@ cartRouter.get("/:cid", authorizationAdminOrUser, getCartByIdController);
 
 cartRouter.post("/", authorizationUser, addCartController);
 
-cartRouter.delete("/:cid", authorizationAdmin, DeleteCartByIdController);
+cartRouter.delete("/delete/:cid", authorizationAdmin, DeleteCartByIdController);
 
 cartRouter.delete("/:cid/product/:pid", authorizationUser, removeProductFromCartController);
 
 cartRouter.delete("/:cid/emptycart/", authorizationUser, emptyCartController);
 
-cartRouter.put("/:cid", authorizationUser, UpdateDataCartController);
+cartRouter.put("/update/:cid", authorizationUser, UpdateDataCartController);
 
-cartRouter.put("/:cid/product/:pid", authorizationUser, updateQuantityOfProductController);
+cartRouter.put("/:cid/productquantity/:pid", authorizationUser, updateQuantityOfProductController);
 
 cartRouter.post("/:cid/checkout", authorizationUser, checkoutCartController);
 

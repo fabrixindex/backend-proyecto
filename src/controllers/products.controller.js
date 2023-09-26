@@ -18,7 +18,7 @@ export const getAllProductsController = async (req, res) => {
                 baseUrl
               );
           
-              res.send({ status: "success", products: productos });
+              res.status(200).send({ status: "success", products: productos });
 
     }catch(error) {
         res
@@ -148,7 +148,7 @@ export const DeleteProductByIdController = async (req, res) => {
 export const getMockingProductsController = (req, res) => {
     ProductsService.getMockingProducts()
       .then((products) => {
-        res.send({ status: 1, products: products });
+        res.status(200).send({ status: 1, products: products });
       })
       .catch((error) => {
         res

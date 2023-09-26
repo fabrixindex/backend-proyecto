@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { register, login, profile, resetPassword, staticProducts, realtimeproducts, products, carts, webChat } from "../controllers/view.controller.js";
+import { register, login, profile, resetPassword, staticProducts, realtimeproducts, products, carts, webChat, restorePass } from "../controllers/view.controller.js";
 
 const viewRouter = Router();
 
@@ -28,5 +28,7 @@ viewRouter.get("/products", privateAccess, products);
 viewRouter.get("/cartsView/:cartId", privateAccess, carts);
 /*-------------------------------------------------------------------------------------------------------------------------*/
 viewRouter.get('/webchat', webChat);
+/*-------------------------------------------------------------------------------------------------------------------------*/
+viewRouter.get('/restorepass/:email', restorePass)
 
 export default viewRouter;

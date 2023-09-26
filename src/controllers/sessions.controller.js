@@ -3,6 +3,11 @@ import { createHash } from "../utils/utils.js";
 import userDTO from "../dto/users.dto.js";
 import { generateResetToken } from "../utils/generateResetToken.js";
 import { transportMail } from "../app.js";
+import variables from "../config/dotenv.config.js"
+
+const MAIL_AUTH_USER = variables.MAIL_AUTH_user;
+const BASE_URL = variables.BASE_url;
+const PORT = variables.port;
 
 export const registerController = async (req, res) => {
   try {
@@ -54,13 +59,38 @@ export const logoutController = (req, res) => {
 
 export const sendEmailToRestartPassword = async (req, res) => {
   try {
-    const { email } = req.body;
-    const codeToRestart = generateResetToken()
+    //const codeToRestart = generateResetToken()
+    const email = req.params.email;
 
-    const sendEmail = transportMail()
-  }catch {
+    const emailToSend = {
+      from: `${MAIL_AUTH_USER}`,
+      to: email,
+      subject: `Recuperar pass`,
+      html: `<h1> Para recuperar tu pass, haz click en el boton de abajo </h1>
+              <hr>
+              <a href="${BASE_URL}:${PORT}/restore-pass/${email}"> CLICK AQUI </a>
+            `,
+    };
+
+    const info = await transportMail.sendMail(emailToSend);
+
+    res.send({ message: "Mail sent!"})
+  }catch(error) {
     console.log(error)
   }
+}
+
+export const passChanged = async (req, res) => {
+  const { password } = req.body;
+  const hashedPassword = createHash(password)
+  await userModel.updateOne(
+    { _id: user._id },
+    { $set: { password: hashedPassword } }
+  );
+
+  req.logger.info(`Contraseña cambiada! 😁`)
+
+  res.send({ status: "success", message: "contraseña restaurada" });
 }
 
 export const restartPasswordController = async (req, res) => {

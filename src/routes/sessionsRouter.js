@@ -1,6 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
-import { registerController, loginController, logoutController, restartPasswordController, githubCallbackController, currentController } from "../controllers/sessions.controller.js";
+import { registerController, loginController, logoutController, restartPasswordController, githubCallbackController, currentController, sendEmailToRestartPassword } from "../controllers/sessions.controller.js";
 
 const sessionRouter = Router();
 
@@ -25,6 +25,8 @@ sessionRouter.get("/api/sessions/faillogin", (req, res) => {
 });
 
 sessionRouter.get("/logout", logoutController);
+
+sessionRouter.get("/send-recover-mail/:email", sendEmailToRestartPassword);
 
 sessionRouter.put("/restartPassword", restartPasswordController);
 

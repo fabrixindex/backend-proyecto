@@ -22,6 +22,8 @@ import variables from "./config/dotenv.config.js";
 import { addLogger } from "./utils/logger.js";
 import logsRouter from "./routes/logsRouter.js";
 import nodemailer from 'nodemailer';
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUIExpress from 'swagger-ui-express';
 
 /* ----------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------- CONFIGURACION EXPRESS ------------------------------------------------------*/
@@ -128,6 +130,22 @@ io.on("connection", (socket) => {
     socket.broadcast.emit(`newUserConnected`, data);
   });
 });
+
+/* ----------------------------------------------------------------------------------------------------------------------- */
+/*----------------------------------------------- CONFIGURACION SWAGGER ---------------------------------------------------*/
+const swaggerOptions = {
+  definition: {
+      openapi: '3.0.1',
+      info: {
+          title: 'Documentacion API CatsBook',
+          description: 'Documentacion para uso de swagger!!'
+      }
+  },
+  apis: [`./src/docs/**/*.yaml`]
+};
+
+const specs = swaggerJSDoc(swaggerOptions);
+app.use('/apidocs', swaggerUIExpress.serve, swaggerUIExpress.setup(specs));
 
 /* ----------------------------------------------------------------------------------------------------------------------- */
 /*------------------------------------------- CONFIGURACION DE MAILING ----------------------------------------------------*/

@@ -12,8 +12,8 @@ router.get("/", authorizationAdminOrUser, getAllProductsController);
 
 router.post("/new-product", authorizationAdminOrPremium, createProductController);
 
-router.put("/:pid", allowPremiumToDeleteOwnProducts, updateProductController);
+router.put("/update/:pid", allowPremiumToDeleteOwnProducts, updateProductController);
 
-router.delete("/:pid", allowPremiumToDeleteOwnProducts, DeleteProductByIdController);
+router.delete("/delete/:pid", allowPremiumToDeleteOwnProducts, DeleteProductByIdController);
 
 export default router;

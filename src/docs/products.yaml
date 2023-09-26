@@ -1,0 +1,209 @@
+paths:
+  /api/products/:
+    get:
+      summary: Obtiene todos los productos
+      tags:
+        - products
+      responses:
+        "200":
+          description: Los productos fueron obtenidos exitosamente de la base de datos.
+          content:
+            application/json:
+              example:
+                status: success
+                products: [ ... ] # Ejemplo de lista de productos
+        "500":
+          description: Error al obtener los productos de la base de datos.
+          content:
+            application/json:
+              example:
+                status: error
+                message: Error al obtener los productos
+
+  /api/products/{pid}:
+    get:
+      summary: Obtiene un producto por su ID
+      tags:
+        - products
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          description: ID del producto a obtener.
+          schema:
+            type: string # Supongo que el ID del producto es una cadena
+      responses:
+        "200":
+          description: Producto encontrado exitosamente.
+          content:
+            application/json:
+              example:
+                status: success
+                product: { ... } # Ejemplo de un producto
+        "404":
+          description: Producto no encontrado.
+          content:
+            application/json:
+              example:
+                status: error
+                message: Producto no encontrado
+        "500":
+          description: Error al obtener el producto.
+          content:
+            application/json:
+              example:
+                status: error
+                message: Error al obtener el producto
+
+  /api/products/new-product:
+    post:
+      summary: Crea un nuevo producto
+      tags:
+        - products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              title: "Nuevo Producto"
+              description: "Descripción del nuevo producto"
+              price: 19.99
+              code: 123456
+              stock: 100
+              category: "Electrónica"
+      responses:
+        "201":
+          description: Producto creado exitosamente.
+          content:
+            application/json:
+              example:
+                message: Producto agregado exitosamente
+                product: { ... } # Ejemplo del producto creado
+        "400":
+          description: Código de producto duplicado.
+          content:
+            application/json:
+              example:
+                message: El código del producto ya existe. No se puede repetir.
+        "500":
+          description: Error al agregar el producto.
+          content:
+            application/json:
+              example:
+                message: Error al agregar el producto en la base de datos
+
+  /api/products/update/{pid}:
+    put:
+      summary: Actualiza un producto por su ID
+      tags:
+        - products
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          description: ID del producto
+          schema:
+            type: string 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              title: "Producto Actualizado"
+              description: "Descripción actualizada del producto"
+              price: 29.99
+      responses:
+        "200":
+          description: Producto actualizado exitosamente.
+          content:
+            application/json:
+              example:
+                message: Producto actualizado exitosamente
+                product: { ... } 
+        "404":
+          description: Producto no encontrado.
+          content:
+            application/json:
+              example:
+                status: error
+                message: Producto no encontrado
+        "500":
+          description: Error al actualizar el producto.
+          content:
+            application/json:
+              example:
+                status: error
+                message: Error al actualizar el producto
+
+  /api/products/delete/{pid}:
+    delete:
+      summary: Elimina un producto por su ID
+      tags:
+        - products
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          description: ID del producto
+          schema:
+            type: string 
+      responses:
+        "200":
+          description: Producto eliminado exitosamente.
+          content:
+            application/json:
+              example:
+                status: true
+                message: Producto eliminado exitosamente
+        "404":
+          description: Producto no encontrado.
+          content:
+            application/json:
+              example:
+                status: false
+                message: No se encontró el producto con el ID proporcionado
+        "500":
+          description: Error al eliminar el producto.
+          content:
+            application/json:
+              example:
+                status: false
+                message: Error al eliminar el producto
+
+components:
+  schemas:
+    products:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Título del producto. Requerido.
+        description:
+          type: string
+          description: Descripción del producto. Requerido.
+        price:
+          type: number
+          description: Precio del producto. Requerido.
+        thumbnails:
+          type: string
+          description: URL de la imagen en miniatura del producto.
+        code:
+          type: number
+          description: Código único del producto. Requerido y único.
+        stock:
+          type: number
+          description: Cantidad en stock del producto. Requerido.
+        category:
+          type: string
+          description: Categoría del producto. Requerido.
+        owner:
+          type: string
+          description: ID del propietario del producto en referencia a la colección "Users".
+      example:
+        title: "Producto de ejemplo"
+        description: "Esta es una descripción de ejemplo para el producto."
+        price: 19.99
+        code: 123456
+        stock: 100
+        category: "Electrónica"
+        owner: "603f77db926a485e9c4b3570"

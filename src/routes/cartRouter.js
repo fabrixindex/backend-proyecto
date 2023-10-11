@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { addCartController, getCartByIdController, addProductToCartController, DeleteCartByIdController, removeProductFromCartController, emptyCartController, UpdateDataCartController, updateQuantityOfProductController, checkoutCartController } from "../controllers/cart.controller.js";
-import { authorizationUser, authorizationAdmin, authorizationAdminOrUser, validateUserCart } from "../utils/utils.js";
+import { authorizationUser, authorizationAdmin, authorizationAdminOrUser, validateUserCart, checkUserRoleIsPremium } from "../utils/utils.js";
 
 const cartRouter = Router();
 
-cartRouter.post("/:cid/producto/:pid", validateUserCart, addProductToCartController);
+cartRouter.post("/:cid/producto/:pid", validateUserCart, checkUserRoleIsPremium, addProductToCartController);
 
 cartRouter.get("/:cid", authorizationAdminOrUser, getCartByIdController);
 

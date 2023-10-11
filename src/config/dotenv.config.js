@@ -21,5 +21,6 @@ export default {
     persistense: process.env.PERSISTENSE,
     environment: process.env.ENVIRONMENT,
     BASE_url: process.env.BASE_URL,
+    PRIVATE_key: process.env.PRIVATE_KEY,
   }; 
 

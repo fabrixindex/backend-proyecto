@@ -1,6 +1,7 @@
 import { Router } from "express";
 import passport from "passport";
-import { registerController, loginController, logoutController, restartPasswordController, githubCallbackController, currentController, sendEmailToRestartPassword } from "../controllers/sessions.controller.js";
+import { registerController, loginController, logoutController, githubCallbackController, currentController, sendEmailToRestartPassword, passChanged, changeUserRoleToPremiumController } from "../controllers/sessions.controller.js";
+import { validateToken } from "../utils/utils.js";
 
 const sessionRouter = Router();
 
@@ -27,8 +28,7 @@ sessionRouter.get("/api/sessions/faillogin", (req, res) => {
 sessionRouter.get("/logout", logoutController);
 
 sessionRouter.get("/send-recover-mail/:email", sendEmailToRestartPassword);
-
-sessionRouter.put("/restartPassword", restartPasswordController);
+sessionRouter.put("/pass-change/:email", validateToken, passChanged);
 
 sessionRouter.get("/github", passport.authenticate("github", { scope: ["user:email"] }), async (req, res) => {} );
 
@@ -43,6 +43,8 @@ sessionRouter.get("/githubFailure", (req, res) => {
 });
 
 sessionRouter.get("/current", currentController); 
+
+sessionRouter.put("/premium/:uid", changeUserRoleToPremiumController);
 
 
 export default sessionRouter;

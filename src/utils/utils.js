@@ -2,6 +2,10 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import bcrypt from "bcrypt";
 import { productsService } from "../services/products.service.js";
+import jwt from 'jsonwebtoken';
+import variables from "../config/dotenv.config.js"
+
+const PRIVATE_KEY = variables.PRIVATE_key;
 
 const ProductsService = new productsService()
 
@@ -34,7 +38,7 @@ async function authorizationAdmin(req, res, next) {
 // Middleware para validar el rol de "user"
 async function authorizationUser(req, res, next) {
   try {
-    if (req.user && req.user.userRole === "user") {
+    if (req.user && (req.user.userRole === "user" || req.user.userRole === "premium")) {
       return next();
     } else {
       return res
@@ -67,7 +71,7 @@ async function authorizationAdminOrUser(req, res, next) {
 // Middleware para validar el rol de "user" y para asegurar que el cid pertenezca a ese usuario
 async function validateUserCart(req, res, next) {
   try {
-    if (!req.user || req.user.userRole !== "user") {
+    if (!req.user || (req.user.userRole !== "user" && req.user.userRole !== "premium")) {
       return res
         .status(401)
         .json({ message: "Acceso no autorizado para usuarios regulares" });
@@ -139,6 +143,54 @@ async function allowPremiumToDeleteOwnProducts(req, res, next) {
   }
 };
 
+//Middleware para validad que el usuario sea premiun y que no pueda agregar un producto del que es owner
+
+const checkUserRoleIsPremium = async (req, res, next) => {
+  try {
+    const userRole = req.user.userRole; 
+    const productId = req.params.pid;
+
+    if (userRole === 'premium') {
+      const product = await ProductsService.getProductById(productId);
+
+      const userEmail = req.user.email; 
+
+      const productArray = product[0]; 
+      const owner = productArray.owner; 
+
+      if (owner === userEmail) {
+        return res.status(403).json({ message: 'No puedes agregar tu propio producto al carrito.' });
+      }
+    }
+
+    return next();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error en la verificación de rol de usuario' });
+  }
+};
+
+//Middleware para validar token
+
+async function validateToken(req, res, next) {
+  try{
+    const token = req.params.email;
+    jwt.verify(token, PRIVATE_KEY);
+    const data = jwt.decode(token); 
+
+    req.email = data.email;
+    req.token = token
+    next()
+  }catch(error){
+    
+    if (error.message === 'jwt expired') {
+      return res.redirect('http://localhost:8080/emailToRestorePass');
+    }
+
+    return res.send(`Hubo un error al intentar recuperar password: ${error.message}`)
+  }
+} 
+
 export {
   authorizationAdmin,
   authorizationUser,
@@ -146,4 +198,6 @@ export {
   authorizationAdminOrPremium,
   validateUserCart,
   allowPremiumToDeleteOwnProducts,
+  checkUserRoleIsPremium,  
+  validateToken
 };

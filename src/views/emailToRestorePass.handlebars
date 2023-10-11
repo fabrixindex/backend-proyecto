@@ -1,0 +1,14 @@
+<h1>Hola! Vamos a restaurar tu pass!</h1>
+<div>
+    <p>Primero necesitamos que ingreses tu email para poder corroborar tu identidad y asi proceder al cambio de tu password</p>
+
+    <form id="recoverForm" method="get" action="http://localhost:8080/api/sessions/send-recover-mail/">
+        <label>Ingrese su email</label>
+        <input name="user-email" id="userEmail" type="email" placeholder="Ingrese su email">
+        <input type="submit">
+    </form>
+    <a href="http://localhost:8080/login">Volver al menú principal</a>
+</div>
+
+<script src="/js/sendEmailToRestarPassword.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>

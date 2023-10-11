@@ -116,11 +116,20 @@ export const webChat = async (req, res) => {
 
 export const restorePass = async (req, res) => {
     try{
-        res.render('restore-pass');
+        const token = req.token
+        res.render('resetPassword', {token});
     }catch(error){
         console.log(error)
     }
-}
+}; 
+
+export const sendEmailToRestorePass = async (req, res) => {
+    try{
+        res.render('emailToRestorePass')
+    }catch(error){
+        console.log(error)
+    }
+};
 
 
 

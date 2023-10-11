@@ -1,13 +1,15 @@
 import userModel from "../dao/models/user.model.js";
 import { createHash } from "../utils/utils.js";
 import userDTO from "../dto/users.dto.js";
-import { generateResetToken } from "../utils/generateResetToken.js";
 import { transportMail } from "../app.js";
 import variables from "../config/dotenv.config.js"
+import jwt from 'jsonwebtoken';
+import { isValidPassword } from "../utils/utils.js";
 
 const MAIL_AUTH_USER = variables.MAIL_AUTH_user;
 const BASE_URL = variables.BASE_url;
 const PORT = variables.port;
+const PRIVATE_KEY = variables.PRIVATE_key;
 
 export const registerController = async (req, res) => {
   try {
@@ -56,11 +58,11 @@ export const logoutController = (req, res) => {
     res.redirect("/login");
   });
 };
-
 export const sendEmailToRestartPassword = async (req, res) => {
   try {
-    //const codeToRestart = generateResetToken()
     const email = req.params.email;
+
+    const token = jwt.sign({ email }, `${PRIVATE_KEY}`, { expiresIn: '1h' });
 
     const emailToSend = {
       from: `${MAIL_AUTH_USER}`,
@@ -68,10 +70,11 @@ export const sendEmailToRestartPassword = async (req, res) => {
       subject: `Recuperar pass`,
       html: `<h1> Para recuperar tu pass, haz click en el boton de abajo </h1>
               <hr>
-              <a href="${BASE_URL}:${PORT}/restore-pass/${email}"> CLICK AQUI </a>
+              <a href="${BASE_URL}:${PORT}/restore-pass/${token}"> CLICK AQUI </a>
             `,
     };
 
+    console.log("TOKEN:", `${token}`)
     const info = await transportMail.sendMail(emailToSend);
 
     res.send({ message: "Mail sent!"})
@@ -80,42 +83,32 @@ export const sendEmailToRestartPassword = async (req, res) => {
   }
 }
 
+//PONERLE UN MEJOR NOMBRE
 export const passChanged = async (req, res) => {
-  const { password } = req.body;
-  const hashedPassword = createHash(password)
-  await userModel.updateOne(
-    { _id: user._id },
-    { $set: { password: hashedPassword } }
-  );
-
-  req.logger.info(`Contraseña cambiada! 😁`)
-
-  res.send({ status: "success", message: "contraseña restaurada" });
-}
-
-export const restartPasswordController = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).send({ status: "error", error: "Couldn't find" });
-    }
+  try{
+    const { password } = req.body;
+    const { email } = req;
+    const newHashedPassword = createHash(password)
 
     const user = await userModel.findOne({ email });
     if (!user) {
       return res.status(404).send({ status: "error", error: "user not found" });
+    };
+    
+    if (isValidPassword(user, password)) {
+      return res.status(400).send({ status: "error", error: "same password" });
     }
 
-    const newHashedPassword = createHash(password);
     await userModel.updateOne(
       { _id: user._id },
       { $set: { password: newHashedPassword } }
     );
-
+  
     req.logger.info(`Contraseña cambiada! 😁`)
-
+  
     res.send({ status: "success", message: "contraseña restaurada" });
-  } catch (error) {
-    console.log(error);
+  }catch(error){
+    console.log(error)
   }
 };
 
@@ -132,17 +125,40 @@ export const githubCallbackController = async (req, res) => {
 export const currentController = async (req, res) => {
   try {
     
-    if (!req.user) {
+    if (!req.session.user) {
       return res
         .status(401)
         .send({ status: "error", error: "User not authenticated" });
     }
-
+    
+    const user = req.session.user
+    
     res.send({
       status: "success",
       payload: new userDTO(user),
     });
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const changeUserRoleToPremiumController = async (req, res) => {
+  try{
+    const userId = req.params.uid;
+
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    user.userRole = user.userRole === 'user' ? 'premium' : 'user';
+
+    await user.save();
+
+    res.status(200).json({ message: 'Rol de usuario actualizado con éxito', newUserRole: user.userRole });
+  }catch(error){
+    console.log(error)
+    res.status(500).json({ message: 'Error al actualizar el rol del usuario' });
   }
 };

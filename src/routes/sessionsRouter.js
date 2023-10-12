@@ -1,7 +1,8 @@
 import { Router } from "express";
 import passport from "passport";
-import { registerController, loginController, logoutController, githubCallbackController, currentController, sendEmailToRestartPassword, passChanged, changeUserRoleToPremiumController } from "../controllers/sessions.controller.js";
-import { validateToken } from "../utils/utils.js";
+import { registerController, loginController, logoutController, githubCallbackController, currentController, sendEmailToRestartPassword, passChanged, changeUserRoleToPremiumController, sendDocumentsToUser } from "../controllers/sessions.controller.js";
+import { validateToken , setLastConnection} from "../utils/utils.js";
+import uploader from "../utils/multer.js";
 
 const sessionRouter = Router();
 
@@ -25,7 +26,7 @@ sessionRouter.get("/api/sessions/faillogin", (req, res) => {
   res.status(400).send({ status: "error", error: "Login fail" });
 });
 
-sessionRouter.get("/logout", logoutController);
+sessionRouter.get("/logout", setLastConnection, logoutController);
 
 sessionRouter.get("/send-recover-mail/:email", sendEmailToRestartPassword);
 sessionRouter.put("/pass-change/:email", validateToken, passChanged);
@@ -46,5 +47,6 @@ sessionRouter.get("/current", currentController);
 
 sessionRouter.put("/premium/:uid", changeUserRoleToPremiumController);
 
+sessionRouter.post("/premium/:uid/documents", uploader('documents').array('documents'), sendDocumentsToUser);
 
 export default sessionRouter;

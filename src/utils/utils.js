@@ -3,7 +3,8 @@ import { dirname } from "path";
 import bcrypt from "bcrypt";
 import { productsService } from "../services/products.service.js";
 import jwt from 'jsonwebtoken';
-import variables from "../config/dotenv.config.js"
+import variables from "../config/dotenv.config.js";
+import userModel from "../dao/models/user.model.js";
 
 const PRIVATE_KEY = variables.PRIVATE_key;
 
@@ -191,6 +192,19 @@ async function validateToken(req, res, next) {
   }
 } 
 
+async function setLastConnection(req, res, next){
+  try{
+    const user = req.session.user
+    user.last_connection = new Date();
+
+    await userModel.findOneAndUpdate({ email: req.session.user.email }, { $set: { last_connection: user.last_connection } });
+
+    return next()
+  }catch(error){
+    return res.status(500).json({ message: 'Error al actualizar la última conexión del usuario' });
+  }
+}
+
 export {
   authorizationAdmin,
   authorizationUser,
@@ -199,5 +213,6 @@ export {
   validateUserCart,
   allowPremiumToDeleteOwnProducts,
   checkUserRoleIsPremium,  
-  validateToken
+  validateToken,
+  setLastConnection
 };

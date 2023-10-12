@@ -32,7 +32,15 @@ const schema = new mongoose.Schema({
         type: String,
         enum: ["user", "admin", "premium"],
         default: "user"
-    }
+    },
+    last_connection: {
+        type: Date,
+        select: true, 
+    },
+    documents: [{
+            name:  String,
+            reference: String,
+    }] 
 });
  
 const userModel = mongoose.model(collection, schema);

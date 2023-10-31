@@ -1,14 +1,85 @@
-<h1>Hola! Vamos a restaurar tu pass!</h1>
-<div>
-    <p>Primero necesitamos que ingreses tu email para poder corroborar tu identidad y asi proceder al cambio de tu password</p>
+<div id="recovery-container">
+    <h1 class="recovery-title">Hi! Let's reset your password!</h1>
+    <div class="recovery-content">
+        <p>We will send you an email to confirm your identity and proceed to change your password.</p>
 
-    <form id="recoverForm" method="get" action="http://localhost:8080/api/sessions/send-recover-mail/">
-        <label>Ingrese su email</label>
-        <input name="user-email" id="userEmail" type="email" placeholder="Ingrese su email">
-        <input type="submit">
-    </form>
-    <a href="http://localhost:8080/login">Volver al menú principal</a>
+        <form id="recoverForm" method="get" action="http://localhost:8080/api/sessions/send-recover-mail/">
+            <label class="recovery-label">Enter your email</label>
+            <input name="user-email" id="userEmail" type="email" placeholder="Ingrese su email" class="recovery-input">
+            <input type="submit" class="recovery-submit-button">
+        </form>
+        
+        <a href="http://localhost:8080/login" class="recovery-link">Return</a>
+    </div>
 </div>
+
+<style>
+#recovery-container {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #000000;
+    border-radius: 10px;
+    padding: 20px;
+    width: 550px;
+    margin: 0 auto;
+    margin-top: 2rem;
+}
+
+.recovery-title {
+    font-size: 33px;
+    margin: 0 0 20px;
+}
+
+.recovery-content {
+    text-align: left;
+}
+
+.recovery-label {
+    display: block;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+.recovery-input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.recovery-submit-button {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    margin-bottom: 0.5rem;
+}
+
+.recovery-submit-button:hover {
+    background-color: #0056b3;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.recovery-link {
+    color: #007bff;
+    margin: 10px 0;
+    text-decoration: none;
+}
+
+.recovery-link:hover {
+    text-decoration: underline;
+}
+
+</style>
 
 <script src="/js/sendEmailToRestarPassword.js"></script>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>

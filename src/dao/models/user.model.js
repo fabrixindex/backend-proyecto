@@ -5,24 +5,24 @@ const collection = 'Users';
 const schema = new mongoose.Schema({
     first_name: {
         type: String,
-        require: true,
+        required: true,
     },
     last_name: {
         type: String,
-        require: true,
+        required: true,
     },
     email: {
         type: String,
-        require: true,
+        required: true,
         unique: true,
     },
     age: {
         type: Number,
-        require: true,
+        required: true,
     },
     password: {
         type: String,
-        require: true,
+        required: true,
     },
     cart: {
         type: mongoose.Schema.Types.ObjectId,
@@ -30,7 +30,7 @@ const schema = new mongoose.Schema({
     },
     userRole: {
         type: String,
-        enum: ["user", "admin", "premium"],
+        enum: ["user", "admin", "premium", "test"],
         default: "user"
     },
     last_connection: {
@@ -40,7 +40,15 @@ const schema = new mongoose.Schema({
     documents: [{
             name:  String,
             reference: String,
-    }] 
+    }],
+    profile: [{
+            name: String,
+            reference: String,
+    }],
+    deleted: {
+        type: Boolean,
+        default: false
+    } 
 });
  
 const userModel = mongoose.model(collection, schema);

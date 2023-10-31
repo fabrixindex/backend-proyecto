@@ -2,10 +2,10 @@ import { messagesServices } from "../services/messages.service.js"
 
 const MessageService = new messagesServices();
 
-export const getMesssagesController = async (req, res) => {
+export const getMessagesController = async (req, res) => {
     try{
         const messages = await MessageService.getMessages();
-        res.send({status: 1, messages: messages});
+        res.status(200).send({status: "success", messages: messages});
 
     }catch (error) {
         res.status(500).json({ error: "Error al obtener los mensajes" });
@@ -14,9 +14,11 @@ export const getMesssagesController = async (req, res) => {
 
 export const addMessageController = async (req, res) => {
     try{
-        const { user, message } = req.body;
+        const { message } = req.body;
+        const user = req.session.user.email;
         const newMessage = await MessageService.addMessage(user, message);
-        res.send({status: 1, msg: 'Message added successfully', message: newMessage});
+
+        res.status(200).send({status: "success", msg: 'Message added successfully', message: newMessage});
         
     }catch (error) {
         res.status(500).send({status: 0, msg: error.message});

@@ -18,7 +18,8 @@ const uploader = (folderName) => {
         },
         filename: function (req, file, cb) {
           console.log("🚀 ~ file: upload-img.js:12 ~ file", file);
-          cb(null, `${Date.now()}-${file.originalname}`);
+          const currentDate = new Date(Date.now()).toISOString().split('T')[0];
+          cb(null, `${currentDate}-${file.originalname}`);
         },
       }),
       onError: function (err, next) {

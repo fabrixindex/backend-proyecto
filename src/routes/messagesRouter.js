@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { getMesssagesController, addMessageController } from "../controllers/messages.controller.js";
+import { getMessagesController, addMessageController } from "../controllers/messages.controller.js";
+import { authorizationAdminOrUser } from "../utils/utils.js";
 
 const messagesRouter = Router();
 
-messagesRouter.get("/messages", getMesssagesController);
+messagesRouter.get("/messages", authorizationAdminOrUser, getMessagesController);
 
-messagesRouter.post('/messages-send', addMessageController);
+messagesRouter.post('/messages-send', authorizationAdminOrUser, addMessageController);
 
 export default messagesRouter;

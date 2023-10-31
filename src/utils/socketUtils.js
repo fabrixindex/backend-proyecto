@@ -4,12 +4,12 @@ import productManagerMongodb from '../dao/managers/productManager-mongodb.js';
 const messageManager = new MessagesManager();
 const productM = new productManagerMongodb();
 
-const productsUpdated = async (io) => {
-    const products = await productM.getAllproducts();
+export const productsUpdated = async (io) => {
+    const products = await productM.getAllProducts();
     io.emit('productsUpdated', products.products);  
-};
+}; 
 
-const chat = async (socket, io) => {
+export const chat = async (socket, io) => {
     socket.on('authenticated', async (data) => {
         const messages = await messageManager.getMessages();
         socket.emit('messageLogs', messages); 
@@ -23,5 +23,3 @@ const chat = async (socket, io) => {
         io.emit('messageLogs', messages); 
     });
 };
-
-export { chat, productsUpdated };

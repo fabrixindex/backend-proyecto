@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { getAllProductsController, getProductByIdController, createProductController, updateProductController, DeleteProductByIdController, getMockingProductsController } from "../controllers/products.controller.js";
+import { getAllProductsController, getProductByIdController, createProductController, updateProductController, DeleteProductByIdController, getMockingProductsController, sendProductImageController } from "../controllers/products.controller.js";
 import { authorizationAdminOrUser, authorizationAdminOrPremium, allowPremiumToDeleteOwnProducts } from "../utils/utils.js";
+import uploaderProductsFiles from "../utils/multerToProductsFiles.js";
 
 const router = Router();
 
@@ -16,4 +17,6 @@ router.put("/update/:pid", allowPremiumToDeleteOwnProducts, updateProductControl
 
 router.delete("/delete/:pid", allowPremiumToDeleteOwnProducts, DeleteProductByIdController);
 
-export default router;
+router.post("/sendProductImage/:pid", uploaderProductsFiles('products').array('products'), sendProductImageController);
+
+export default router; 

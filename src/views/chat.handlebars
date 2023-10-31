@@ -1,16 +1,83 @@
-<h1>Bienvenidos al chat</h1>
+<h1 class="chat-title">Welcome to out ChatRoom {{user.name}}!</h1>
 
-<div>
-  <p>Ingresa el mensaje que desees enviar 😎</p>
-  <input id="chatBox">
-</div>
+    <div class="chat-buttons">
+        <a href="/products"><button class="chat-button">Return</button></a>
+        <a href="/profile"><button class="chat-button">Profile</button></a>
+    </div>
 
-<div>
-  <p id="messageLogs"></p>
-</div>
+    <div class="chat-logs">
+        <p id="messageLogs"></p>
+    </div>
 
-<p id="message"></p>
+    <div class="chat-input">
+        <input class="chat-input-box" id="chatBox" data-input="{{user}}" placeholder="Enter the message you want to send!">
+    </div>
 
+    <p class="chat-message" id="message"></p>
+
+<style>
+  /* Estilos para el título del chat */
+.chat-title {
+    font-size: 24px;
+    margin: 20px 0;
+    margin-left: 1rem;
+}
+
+/* Estilos para los botones del chat */
+.chat-buttons {
+    display: flex;
+    justify-content: end;
+    margin: 20px 0;
+}
+
+.chat-button {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    margin: 0 10px;
+}
+
+.chat-button:hover {
+    background-color: #0056b3;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos para el cuadro de entrada de mensajes */
+.chat-input {
+    text-align: start;
+    margin: 20px 0;
+    margin-left: 1rem;
+}
+
+.chat-input-box {
+    width: 30%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 5px 0;
+}
+
+/* Estilos para los registros de mensajes */
+.chat-logs {
+    text-align: start;
+    margin: 1rem;
+}
+
+/* Estilos para los mensajes */
+.chat-message {
+    text-align: start;
+    font-weight: bold;
+    font-size: 20px;
+    margin: 1rem;
+}
+</style>
+
+<script>let userEmail = "{{user.email}}"</script>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/chat.js"></script>

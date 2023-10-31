@@ -1,4 +1,4 @@
-const form = document.getElementById("restarPasswordForm");
+const form = document.getElementById("resetPasswordForm");
 
 form.addEventListener('submit', e => {
     e.preventDefault();

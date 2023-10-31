@@ -80,7 +80,7 @@ class productManagerMongodb {
 
   async updateProduct(id, updatedFields) {
     try {
-      const { code, price, stock, description, title } = updatedFields;
+      const { code, price, stock, description, title, thumbnails } = updatedFields;
       const updatedProduct = await this.productsModel.findByIdAndUpdate(
         id,
         {
@@ -89,6 +89,7 @@ class productManagerMongodb {
             ...(description && { description }),
             ...(code && { code }),
             ...(price && { price }),
+            ...(thumbnails && { thumbnails }),
             stock: stock !== undefined ? stock : 0,
           },
         },
@@ -105,12 +106,22 @@ class productManagerMongodb {
 
   async DeleteProductById(id) {
     try {
-      const productDeleted = await this.productsModel.deleteOne({ _id: id });
+      const productDeleted = await this.productsModel.findOneAndRemove({ _id: id });
       return productDeleted;
     } catch (error) {
       console.log(error);
     }
   };
+
+  async sendProductImage(id, newThumbnails) {
+    try {
+      const product = await this.productsModel.findByIdAndUpdate(id, { thumbnails: newThumbnails })
+      return product;
+    } catch (error) {
+      console.log(error)
+    }
+  };
+
 };
 
 export default productManagerMongodb;

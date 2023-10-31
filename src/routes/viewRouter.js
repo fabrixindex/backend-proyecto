@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { register, login, profile, resetPassword, staticProducts, realtimeproducts, products, carts, webChat, restorePass, sendEmailToRestorePass } from "../controllers/view.controller.js";
-import { validateToken } from "../utils/utils.js";
+import { register, login, profile, resetPassword, staticProducts, realtimeproducts, products, carts, webChat, restorePass, sendEmailToRestorePass, adminUpdateOrDeleteUser } from "../controllers/view.controller.js";
+import { authorizationAdmin, validateToken } from "../utils/utils.js";
 
 const viewRouter = Router();
 
@@ -33,5 +33,7 @@ viewRouter.get('/webchat', webChat);
 viewRouter.get('/restore-pass/:email', validateToken, restorePass)
 
 viewRouter.get('/emailToRestorePass', sendEmailToRestorePass)
+
+viewRouter.get('/updateOrDeleteUser', authorizationAdmin, adminUpdateOrDeleteUser)
 
 export default viewRouter;

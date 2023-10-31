@@ -5,7 +5,8 @@
   "main": "src/app.js",
   "type": "module",
   "scripts": {
-    "start": "node .",
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
     "test": "mocha src/test/**/*.test.js --exit"
   },
   "engines": {
@@ -16,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
+    "axios": "^1.5.1",
     "bcrypt": "^5.1.0",
     "commander": "^11.0.0",
     "connect-mongo": "^5.0.0",

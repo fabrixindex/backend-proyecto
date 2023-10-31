@@ -1,8 +1,8 @@
 import { Router } from "express";
 import passport from "passport";
-import { registerController, loginController, logoutController, githubCallbackController, currentController, sendEmailToRestartPassword, passChanged, changeUserRoleToPremiumController, sendDocumentsToUser } from "../controllers/sessions.controller.js";
+import { registerController, loginController, logoutController, githubCallbackController, currentController, sendEmailToRestartPassword, passChanged, changeUserRoleToPremiumController, sendDocumentsToUser, getAllUsersController, markAsDeletedIfInactiveController, sendProfileImageToUserController } from "../controllers/sessions.controller.js";
 import { validateToken , setLastConnection} from "../utils/utils.js";
-import uploader from "../utils/multer.js";
+import uploader from "../utils/multerToUsersFiles.js";
 
 const sessionRouter = Router();
 
@@ -48,5 +48,11 @@ sessionRouter.get("/current", currentController);
 sessionRouter.put("/premium/:uid", changeUserRoleToPremiumController);
 
 sessionRouter.post("/premium/:uid/documents", uploader('documents').array('documents'), sendDocumentsToUser);
+
+sessionRouter.get("/allUsers", getAllUsersController);
+
+sessionRouter.post("/markAsDeletedIfInactive", markAsDeletedIfInactiveController);
+
+sessionRouter.post("/sendProfileImage/:uid", uploader('profiles').array('profiles'), sendProfileImageToUserController);
 
 export default sessionRouter;

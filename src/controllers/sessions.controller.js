@@ -1,10 +1,14 @@
 import userModel from "../dao/models/user.model.js";
 import { createHash } from "../utils/utils.js";
-import userDTO from "../dto/users.dto.js";
-import { transportMail } from "../app.js";
-import variables from "../config/dotenv.config.js"
-import jwt from 'jsonwebtoken';
+import userDTO from "../dto/user.dto.js";
+import { transportMail } from "../config/mailing.config.js";
+import variables from "../config/dotenv.config.js";
+import jwt from "jsonwebtoken";
 import { isValidPassword } from "../utils/utils.js";
+import allUsersDTO from "../dto/allUsers.dto.js";
+import { usersService } from "../services/users.service.js";
+
+const UsersService = new usersService();
 
 const MAIL_AUTH_USER = variables.MAIL_AUTH_user;
 const BASE_URL = variables.BASE_url;
@@ -13,7 +17,7 @@ const PRIVATE_KEY = variables.PRIVATE_key;
 
 export const registerController = async (req, res) => {
   try {
-    req.logger.info(`Nuevo usuario registrado! 😁`)
+    req.logger.info(`Nuevo usuario registrado! 😁`);
     res.send({ status: "success", message: "User registered" });
   } catch (error) {
     console.log(error);
@@ -22,13 +26,14 @@ export const registerController = async (req, res) => {
 
 export const loginController = async (req, res) => {
   try {
-    if (!req.user){
+    if (!req.user) {
       return res
         .status(400)
         .send({ status: "error", error: "Incorrect credentials" });
-    };
-        
+    }
+
     req.session.user = {
+      _id: req.user._id,
       name: `${req.user.first_name} ${req.user.last_name}`,
       email: req.user.email,
       age: req.user.age,
@@ -36,9 +41,12 @@ export const loginController = async (req, res) => {
       cart: req.user.cart,
       documents: req.user.documents,
       last_connection: req.user.last_connection,
+      profile: req.user.profile,
     };
 
-    req.logger.info(`Logueo Realizado! Usuario conectado: ${req.session.user.name} 😁`)
+    req.logger.info(
+      `Logueo Realizado! Usuario conectado: ${req.session.user.name} 😁`
+    );
 
     res.send({
       status: "success",
@@ -52,7 +60,7 @@ export const loginController = async (req, res) => {
 
 export const logoutController = (req, res) => {
   req.session.destroy((err) => {
-    req.logger.info(`Logout Realizado! 😢`)
+    req.logger.info(`Logout Realizado! 😢`);
     if (err)
       return res
         .status(500)
@@ -64,53 +72,56 @@ export const sendEmailToRestartPassword = async (req, res) => {
   try {
     const email = req.params.email;
 
-    const token = jwt.sign({ email }, `${PRIVATE_KEY}`, { expiresIn: '1h' });
+    const token = jwt.sign({ email }, `${PRIVATE_KEY}`, { expiresIn: "1h" });
 
     const emailToSend = {
       from: `${MAIL_AUTH_USER}`,
       to: email,
-      subject: `Recuperar pass`,
-      html: `<h1> Para recuperar tu pass, haz click en el boton de abajo </h1>
-              <hr>
-              <a href="${BASE_URL}:${PORT}/restore-pass/${token}"> CLICK AQUI </a>
-            `,
+      subject: `CatsBook || Reset your Password`,
+      html: `<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; padding: 20px;">
+        <h1 style="color: #333; font-size: 24px;">Recuperar Contraseña</h1>
+        <hr style="border: 1px solid #ccc;">
+        <p style="font-size: 16px;">Para recuperar tu contraseña, haz clic en el botón de abajo:</p>
+        <a href="${BASE_URL}:${PORT}/restore-pass/${token}" style="text-decoration: none;">
+          <button style="background-color: #007BFF; color: #fff; padding: 10px 20px; font-size: 18px; border: none; border-radius: 5px;">CLICK AQUÍ</button>
+        </a>
+      </div>
+    `,
     };
 
-    console.log("TOKEN:", `${token}`)
     const info = await transportMail.sendMail(emailToSend);
 
-    res.send({ message: "Mail sent!"})
-  }catch(error) {
-    console.log(error)
+    res.send({ message: "Mail sent!" });
+  } catch (error) {
+    console.log(error);
   }
-}
+};
 
-//PONERLE UN MEJOR NOMBRE
 export const passChanged = async (req, res) => {
-  try{
+  try {
     const { password } = req.body;
     const { email } = req;
-    const newHashedPassword = createHash(password)
+    const newHashedPassword = createHash(password);
 
-    const user = await userModel.findOne({ email });
+    const user = await UsersService.getUserByEmail(email);
+
     if (!user) {
       return res.status(404).send({ status: "error", error: "user not found" });
-    };
-    
+    }
+
     if (isValidPassword(user, password)) {
       return res.status(400).send({ status: "error", error: "same password" });
     }
 
-    await userModel.updateOne(
-      { _id: user._id },
-      { $set: { password: newHashedPassword } }
-    );
-  
-    req.logger.info(`Contraseña cambiada! 😁`)
-  
+    await UsersService.updatePassword(user._id, {
+      password: newHashedPassword,
+    });
+
+    req.logger.info(`Contraseña cambiada! 😁`);
+
     res.send({ status: "success", message: "contraseña restaurada" });
-  }catch(error){
-    console.log(error)
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -126,14 +137,13 @@ export const githubCallbackController = async (req, res) => {
 
 export const currentController = async (req, res) => {
   try {
-    
     if (!req.session.user) {
       return res
         .status(401)
         .send({ status: "error", error: "User not authenticated" });
     }
-    
-    const user = req.session.user
+
+    const user = req.session.user;
 
     res.send({
       status: "success",
@@ -144,75 +154,203 @@ export const currentController = async (req, res) => {
   }
 };
 
-/*Modificar el endpoint /api/users/premium/:uid   para que sólo actualice al usuario a premium si ya ha cargado los siguientes documentos:
-Identificación, Comprobante de domicilio, Comprobante de estado de cuenta
-*/
+//MODULAR
 
 export const changeUserRoleToPremiumController = async (req, res) => {
-  try{
+  try {
     const userId = req.params.uid;
 
     const user = await userModel.findById(userId);
-
-    console.log("USUARIO COMPLETO:", user)
+    /*const user = await UsersService.getUserById(userId)*/
 
     if (!user) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
+      return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
-    user.userRole = user.userRole === 'user' ? 'premium' : 'user';
+    const missingDocuments = [];
+    const loadedDocuments = [];
 
-    if (user.userRole === 'user'){
-      const requiredDocuments = ['id', 'address', 'account'];
+    if (user.userRole === "user") {
+      const requiredExtensions = [".jpg", ".jpeg", ".png", ".gif"];
       const userDocuments = user.documents || [];
+      const requiredDocuments = ["id", "address", "account"];
 
-      const hasAllDocuments = requiredDocuments.every(requiredDocument => {
-        return userDocuments.some(userDocument => userDocument.name.includes(requiredDocument))
-    });
-    console.log("Nombres de doc:", userDocuments)
+      requiredDocuments.forEach((requiredDocument) => {
+        const hasValidExtension = userDocuments.some((userDocument) => {
+          return requiredExtensions.some((requiredExtension) =>
+            userDocument.name.endsWith(requiredDocument + requiredExtension)
+          );
+        });
 
-    if (!hasAllDocuments) throw new Error('User must have all documents');
-    };
+        if (!hasValidExtension) {
+          missingDocuments.push(requiredDocument);
+        } else {
+          loadedDocuments.push(requiredDocument);
+        }
+      });
+
+      if (missingDocuments.length > 0) {
+        const missingDocumentsMessage = missingDocuments
+          .map((doc) => `falta cargar el documento: ${doc}`)
+          .join(", ");
+
+        return res.status(400).json({
+          message:
+            "El usuario debe tener todos los documentos en un formato de imagen válido",
+          missingDocuments: missingDocuments,
+          loadedDocuments: loadedDocuments,
+          missingDocumentsMessage: missingDocumentsMessage,
+        });
+      }
+    }
+
+    user.userRole = user.userRole === "user" ? "premium" : "user";
+
+    /*await UsersService.updateUserRole(userId, {role: user.userRole});*/
 
     await user.save();
 
-    res.status(200).json({ message: 'Rol de usuario actualizado con éxito', newUserRole: user.userRole });
-  }catch(error){
-    console.log(error)
-    res.status(500).json({ message: 'Error al actualizar el rol del usuario' });
+    res.status(200).json({
+      message: "Rol de usuario actualizado con éxito",
+      newUserRole: user.userRole,
+      missingDocuments: missingDocuments,
+      loadedDocuments: loadedDocuments,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error al actualizar el rol del usuario" });
   }
 };
 
-/*Crear un endpoint en el router de usuarios api/users/:uid/documents con el método POST que permita subir uno o múltiples archivos. Utilizar el middleware de Multer para poder recibir los documentos que se carguen y actualizar en el usuario su status para hacer saber que ya subió algún documento en particular.
-*/
-
 export const sendDocumentsToUser = async (req, res) => {
-  try{
+  try {
     const userId = req.params.uid;
-    const user = await userModel.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
-    }
+    const user = userId;
 
     const documents = user.documents || [];
     const files = req.files;
 
+    const currentDate = new Date(Date.now()).toISOString().split("T")[0];
+    const fileName = `${currentDate}-${files.originalname}`;
+
+    const duplicateFiles = [];
+
+    for (const file of files) {
+      const isFileAlreadyUploaded = documents.some(
+        (document) => document.name === file.originalname
+      );
+      if (isFileAlreadyUploaded) {
+        duplicateFiles.push(file.originalname);
+      }
+    }
+
+    if (duplicateFiles.length > 0) {
+      return res.status(400).json({
+        message: "Los siguientes archivos ya han sido cargados:",
+        duplicateFiles,
+      });
+    }
+
     const newDocuments = [
       ...documents,
-      ...files.map(file => ({ name: file.originalname, reference: file.path }))
-  ];
+      ...files.map((file) => ({
+        name: fileName,
+        reference: file.path,
+      })),
+    ];
 
-  await userModel.findByIdAndUpdate(userId, { documents: newDocuments });
+    await UsersService.sendDocumentsToUser(userId, newDocuments);
 
-  return res.status(200).json({ message: 'Documentos enviados exitosamente' });
-
-  }catch(error){
-    console.log(error)
-    res.status(500).json({ message: 'Error al enviar documento' });
+    return res
+      .status(200)
+      .json({ message: "Documentos enviados exitosamente" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error al enviar documento" });
   }
-}
+};
 
-/*El middleware de multer deberá estar modificado para que pueda guardar en diferentes carpetas los diferentes archivos que se suban.
-Si se sube una imagen de perfil, deberá guardarlo en una carpeta profiles, en caso de recibir la imagen de un producto, deberá guardarlo en una carpeta products, mientras que ahora al cargar un documento, multer los guardará en una carpeta documents.
-*/
+export const getAllUsersController = async (req, res) => {
+  try {
+    const users = await UsersService.getAllUsers();
+    res
+      .status(200)
+      .json({ status: "success", payload: new allUsersDTO(users) });
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener todos los usuarios" });
+  }
+};
+
+export const markAsDeletedIfInactiveController = async (req, res) => {
+  try {
+    const now = new Date();
+    const users = await UsersService.getAllUsers();
+
+    const inactivityPeriodInDays = 2;
+    const inactivityPeriodInMilliseconds =
+      inactivityPeriodInDays * 24 * 60 * 60 * 1000;
+
+    for (const user of users) {
+      if (user.email === "adminCoder@coder.com") {
+        continue;
+      }
+
+      if (
+        user.last_connection &&
+        now - user.last_connection > inactivityPeriodInMilliseconds
+      ) {
+        user.deleted = true;
+        await user.save();
+
+        const emailToSendUserDeleted = {
+          from: `${MAIL_AUTH_USER}`,
+          to: user.email,
+          subject: `CatsBook || Your CatsBook account has been deleted`,
+          html: `
+          <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; padding: 20px;">
+            <h1 style="color: #FF0000; font-size: 24px;">ATENCIÓN</h1>
+            <p style="font-size: 16px; color: #333;">Your CatsBook account has been deleted due to inactivity.</p>
+          </div>
+        `,
+        };
+
+        const info = await transportMail.sendMail(emailToSendUserDeleted);
+      }
+    }
+
+    res.status(200).json({
+      status: "success",
+      payload: "Usuarios marcados como eliminados si corresponde",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error al obtener todos los usuarios" });
+  }
+};
+
+export const sendProfileImageToUserController = async (req, res) => {
+  try {
+    const userId = req.params.uid;
+    const file = req.files[0];
+
+    if (!file) {
+      return res
+        .status(400)
+        .json({ message: "No se proporcionó un archivo de imagen" });
+    }
+
+    const currentDate = new Date(Date.now()).toISOString().split("T")[0];
+    const fileName = `${currentDate}-${file.originalname}`;
+
+    const newProfile = { name: fileName, reference: file.path };
+
+    await UsersService.sendProfileImage(userId, newProfile);
+
+    return res.status(200).json({ message: "Imagen de perfil actualizada" });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Error al subir la imagen de perfil" });
+  }
+};

@@ -30,14 +30,7 @@ const initializePassport = () => {
           const { first_name, last_name, email, age } = req.body;
 
           if(!first_name || !last_name || !email){
-
             console.log('error')
-            /*CustomError.createError({
-                name: 'User Creation Error',
-                cause: generateUserErrorInfo({first_name, last_name, email}),
-                code: EnumErrors.INVALID_TYPES_ERROR,
-                message: 'Error trying to create a new user'
-            });*/
           }
 
           let user = await userModel.findOne({ email: username });
@@ -48,8 +41,8 @@ const initializePassport = () => {
           const isAdmin =
             email === "adminCoder@coder.com" && password === "adminCod3r123";
           
-          const isPremium =
-            email === "premiumUser@example.com" && password === "premiumPassword";
+          const isUserTest =
+            email === "test@test.com" && password === "testpass";
 
           const newUser = {
             first_name,
@@ -57,7 +50,7 @@ const initializePassport = () => {
             email,
             age,
             password: createHash(password), 
-            userRole: isAdmin ? "admin" : (isPremium ? "premium" : "user"),
+            userRole: isAdmin ? "admin" : (isUserTest ? "test" : "user"),
           };
 
           user = await userModel.create(newUser);
@@ -107,18 +100,26 @@ const initializePassport = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
+          console.log("clientID:", `${CLIENT_GITHUB_ID}`, "clientSecret:", `${CLIENT_GITHUB_SECRET}`, "callBackURL:", `${CALL_BACK_GITHUB_URL}`)
           console.log({ profile });
           let user = await userModel.findOne({ email: profile._json.email });
           if (user) return done(null, user);
           const newUser = {
             first_name: profile._json.name,
-            last_name: "",
+            last_name: "🐱‍👤",
             email: profile._json.email,
             age: 0,
-            password: "",
-            userRole: "user",
+            password: ' ',
+            profile: [
+              {
+                name: profile._json.avatar_url,
+                path: profile._json.avatar_url,
+              }
+            ]
           };
+          console.log("NUEVO USUARIO GIT:", newUser)
           user = await userModel.create(newUser);
+
           return done(null, user);
         } catch (error) {
           return done({ message: "Error creating user!" });

@@ -1,0 +1,23 @@
+<h1>EDICION DE USUARIOS</h1>
+
+<div>
+    <h3>Activity Control</h3>
+    <p>Do you want to delete all users who have not logged in the last two days?</p>
+    <button id="delete-button">Delete</button>
+</div>
+
+<ul>
+    {{#each users.users}}
+    <li>
+        <h3>Name: {{this.first_name}} {{this.last_name}}</h3> 
+        <p>Email: {{this.email}}</p>
+        <p>Role: {{this.role}}</p> 
+        <p>Id: {{this.id}}</p>
+        <p>Deleted: {{this.deleted}}</p>
+    </li>
+    <button class="change-role-button" data-id="{{this.id}}">Change role</button>
+    {{/each}}
+</ul>
+
+<script src="/js/admin-updateOrDeleteUser.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>

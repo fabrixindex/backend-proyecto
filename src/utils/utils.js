@@ -2,13 +2,14 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import bcrypt from "bcrypt";
 import { productsService } from "../services/products.service.js";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 import variables from "../config/dotenv.config.js";
 import userModel from "../dao/models/user.model.js";
+import axios from "axios";
 
 const PRIVATE_KEY = variables.PRIVATE_key;
 
-const ProductsService = new productsService()
+const ProductsService = new productsService();
 
 export const createHash = (password) =>
   bcrypt.hashSync(password, bcrypt.genSaltSync(10));
@@ -39,7 +40,12 @@ async function authorizationAdmin(req, res, next) {
 // Middleware para validar el rol de "user"
 async function authorizationUser(req, res, next) {
   try {
-    if (req.user && (req.user.userRole === "user" || req.user.userRole === "premium")) {
+    if (
+      req.user &&
+      (req.user.userRole === "user" ||
+        req.user.userRole === "premium" ||
+        req.user.userRole === "test")
+    ) {
       return next();
     } else {
       return res
@@ -56,7 +62,10 @@ async function authorizationAdminOrUser(req, res, next) {
   try {
     if (
       req.user &&
-      (req.user.userRole === "admin" || req.user.userRole === "user" || req.user.userRole === "premium")
+      (req.user.userRole === "admin" ||
+        req.user.userRole === "user" ||
+        req.user.userRole === "premium" ||
+        req.user.userRole === "test")
     ) {
       return next();
     } else {
@@ -72,7 +81,11 @@ async function authorizationAdminOrUser(req, res, next) {
 // Middleware para validar el rol de "user" y para asegurar que el cid pertenezca a ese usuario
 async function validateUserCart(req, res, next) {
   try {
-    if (!req.user || (req.user.userRole !== "user" && req.user.userRole !== "premium")) {
+    if (
+      !req.user ||
+      (req.user.userRole !== "user" && req.user.userRole !== "premium") ||
+      req.user.userRole === "test"
+    ) {
       return res
         .status(401)
         .json({ message: "Acceso no autorizado para usuarios regulares" });
@@ -92,14 +105,16 @@ async function validateUserCart(req, res, next) {
   } catch (error) {
     return res.status(500).json({ message: "Error interno del servidor" });
   }
-};
+}
 
 // Middleware para validar el rol de "Premium" o "admin" indistintamente
 async function authorizationAdminOrPremium(req, res, next) {
   try {
     if (
       req.user &&
-      (req.user.userRole === "admin" || req.user.userRole === "premium")
+      (req.user.userRole === "admin" ||
+        req.user.userRole === "premium" ||
+        req.user.userRole === "test")
     ) {
       return next();
     } else {
@@ -110,16 +125,15 @@ async function authorizationAdminOrPremium(req, res, next) {
   } catch (error) {
     return res.status(500).json({ message: "Error interno del servidor" });
   }
-};
+}
 
 // Middleware para validar el usuario sea "premium" para eliminar o modificar su propio producto o admin
 async function allowPremiumToDeleteOwnProducts(req, res, next) {
   try {
-    const userRole = req.user.userRole; 
-    const productId = req.params.pid; 
+    const userRole = req.user.userRole;
+    const productId = req.params.pid;
 
     if (userRole === "premium" || userRole === "admin") {
-    
       if (userRole === "admin") {
         return next();
       }
@@ -127,8 +141,8 @@ async function allowPremiumToDeleteOwnProducts(req, res, next) {
       const product = await ProductsService.getProductById(productId);
       const { email } = req.session.user;
 
-      const firstProduct = product[0]; 
-      const owner = firstProduct.owner; 
+      const firstProduct = product[0];
+      const owner = firstProduct.owner;
 
       if (owner === email) {
         return next();
@@ -138,70 +152,99 @@ async function allowPremiumToDeleteOwnProducts(req, res, next) {
     return res
       .status(401)
       .json({ message: "Acceso no autorizado para borrar este producto" });
-
   } catch (error) {
     return res.status(500).json({ message: "Error interno del servidor" });
   }
-};
+}
 
 //Middleware para validad que el usuario sea premiun y que no pueda agregar un producto del que es owner
 
 const checkUserRoleIsPremium = async (req, res, next) => {
   try {
-    const userRole = req.user.userRole; 
+    const userRole = req.user.userRole;
     const productId = req.params.pid;
 
-    if (userRole === 'premium') {
+    if (userRole === "premium") {
       const product = await ProductsService.getProductById(productId);
 
-      const userEmail = req.user.email; 
+      const userEmail = req.user.email;
 
-      const productArray = product[0]; 
-      const owner = productArray.owner; 
+      const productArray = product[0];
+      const owner = productArray.owner;
 
       if (owner === userEmail) {
-        return res.status(403).json({ message: 'No puedes agregar tu propio producto al carrito.' });
+        return res
+          .status(403)
+          .json({
+            message: "No puedes agregar tu propio producto al carrito.",
+          });
       }
     }
 
     return next();
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error en la verificación de rol de usuario' });
+    res
+      .status(500)
+      .json({ message: "Error en la verificación de rol de usuario" });
   }
 };
 
 //Middleware para validar token
 
 async function validateToken(req, res, next) {
-  try{
+  try {
     const token = req.params.email;
     jwt.verify(token, PRIVATE_KEY);
-    const data = jwt.decode(token); 
+    const data = jwt.decode(token);
 
     req.email = data.email;
-    req.token = token
-    next()
-  }catch(error){
-    
-    if (error.message === 'jwt expired') {
-      return res.redirect('http://localhost:8080/emailToRestorePass');
+    req.token = token;
+    next();
+  } catch (error) {
+    if (error.message === "jwt expired") {
+      return res.redirect("http://localhost:8080/emailToRestorePass");
     }
 
-    return res.send(`Hubo un error al intentar recuperar password: ${error.message}`)
+    return res.send(
+      `Hubo un error al intentar recuperar password: ${error.message}`
+    );
   }
-} 
+}
 
-async function setLastConnection(req, res, next){
-  try{
-    const user = req.session.user
+async function setLastConnection(req, res, next) {
+  try {
+    const user = req.session.user;
     user.last_connection = new Date();
 
-    await userModel.findOneAndUpdate({ email: req.session.user.email }, { $set: { last_connection: user.last_connection } });
+    await userModel.findOneAndUpdate(
+      { email: req.session.user.email },
+      { $set: { last_connection: user.last_connection } }
+    );
 
-    return next()
-  }catch(error){
-    return res.status(500).json({ message: 'Error al actualizar la última conexión del usuario' });
+    return next();
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error al actualizar la última conexión del usuario" });
+  }
+}
+
+async function loginTestUser(req, res, next) {
+  try {
+    const loginData = {
+      email: "test@test.com",
+      password: "testpass",
+    };
+    const response = await axios.post(
+      "http://localhost:8080/api/sessions/login",
+      loginData
+    );
+    next();
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Hubo un error al loguearse con el usuario de Test." });
   }
 }
 
@@ -212,7 +255,8 @@ export {
   authorizationAdminOrPremium,
   validateUserCart,
   allowPremiumToDeleteOwnProducts,
-  checkUserRoleIsPremium,  
+  checkUserRoleIsPremium,
   validateToken,
-  setLastConnection
+  setLastConnection,
+  loginTestUser,
 };

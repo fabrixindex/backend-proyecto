@@ -3,6 +3,7 @@ import variables from "../config/dotenv.config.js"
 import ticketManager from "../dao/managers/ticketManager-mongodb.js"
 import cartManagerMongodb from "./managers/cartManager-mongodb.js";
 import MessagesManager from "./managers/messagesManager.js";
+import usersManagerMongodb from "./managers/usersManager-mongodb.js";
 
 const PERSISTENSE = variables.persistense;
 
@@ -46,7 +47,7 @@ export class messagesDaoFactory {
             case 'mongo':
                 return new MessagesManager();
             case 'fileSysten':
-                //return new ticketsFs();
+                //return new messagesFs();
                 throw new Error('fileSysten not implemented yet'); 
             default:
                 return new MessagesManager();
@@ -66,6 +67,22 @@ export class ticketsDaoFactory {
                 throw new Error('fileSysten not implemented yet'); 
             default:
                 return new ticketManager();
+        };
+    };
+};
+
+export class usersDaoFactory {
+
+    static getDao() {
+        const dao = PERSISTENSE || 'mongo'; 
+        switch (dao) {
+            case 'mongo':
+                return new usersManagerMongodb();
+            case 'fileSysten':
+                //return new usersFs();
+                throw new Error('fileSysten not implemented yet'); 
+            default:
+                return new usersManagerMongodb();
         };
     };
 };

@@ -6,16 +6,16 @@ export class messagesServices {
         this.messagesRepository = MessagesRepository;
     };
 
-    getMesssages = async() => {
+    getMessages = async() => {
         try{
-            const messages = await messagesRepository.getMesssages();
+            const messages = await this.messagesRepository.getMessages()
             return messages;
         }catch(error){
             console.log(error)
         }
     };
 
-    addMesage = async (user, message) => {
+    addMessage = async (user, message) => {
         try{
             if (!user) {
                 throw new Error('User is required');

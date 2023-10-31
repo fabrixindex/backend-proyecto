@@ -1,26 +1,127 @@
-<div>
-    <h1>Registro</h1>
-    <form id="registerForm">
-
-        <label>Nombre</label>
-        <input name="first_name">
-        <br/>
-        <label>Apellido</label>
-        <input name="last_name">
-        <br/>
-        <label>Email</label>
-        <input name="email">
-        <br/>
-        <label>Edad</label>
-        <input name="age">
-        <br/>
-        <label>Contraseña</label>
-        <input type="password" name="password">
-
-        <input type="submit">
+<div class="form-container">
+    <h1 class="form-title">Register</h1>
+    <form id="registerForm" class="login-form">
+        <label class="login-label">First Name</label>
+        <input class="login-input" name="first_name">
+        <br />
+        <label class="login-label">Last Name</label>
+        <input class="login-input" name="last_name">
+        <br />
+        <label class="login-label">Email</label>
+        <input class="login-input" name="email">
+        <br />
+        <label class="login-label">Age</label>
+        <input class="login-input" name="age">
+        <br />
+        <label class="login-label">Password</label>
+        <input class="login-input" type="password" name="password">
+        <input type="submit" class="login-submit-button">
     </form>
-    <p>¿Ya tienes una cuenta? <a href="/login">Ingresa aquí</a></p>
+    <p class="login-register-link"><a href="/login">Do you already have an account? Loging here!</a></p>
 </div>
+
+<div class="return-button">
+    <button><a href="/login">Returt</a></button>
+</div>
+
+<style>
+.form-container {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #000000;
+  border-radius: 10px;
+  padding: 20px;
+  width: 500px;
+  margin: 0 auto;
+  margin-top: 2rem;
+}
+
+.form-title {
+  font-size: 33px;
+  margin: 0 0 20px;
+}
+
+.login-form {
+  text-align: left;
+}
+
+.login-label {
+  display: block;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+.login-input {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.login-submit-button {
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 0;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.login-submit-button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.login-register-link {
+  color: #007bff;
+  margin: 10px 0;
+}
+
+.login-register-link a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.login-register-link a:hover {
+  text-decoration: underline;
+}
+
+.return-button {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.return-button button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-bottom: 2rem;
+}
+
+.return-button button a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.return-button button a:hover {
+  text-decoration: underline;
+}
+
+</style>
 
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/register.js"></script>

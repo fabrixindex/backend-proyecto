@@ -54,4 +54,13 @@ export default class ProductsRepository {
             console.log(error)
         }
     };
+
+    sendProductImage = async (id, newThumbnails) => {
+        try{
+            const product = await this.dao.sendProductImage(id, newThumbnails)
+            return product;
+        }catch(error){
+            console.log(error)
+        }
+    }
 };

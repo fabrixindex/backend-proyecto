@@ -1,23 +1,9 @@
 const socket = io();
 
-let user;
 let chatBox = document.getElementById("chatBox");
+let user = userEmail
 
-Swal.fire({
-  title: "Ingresa tu correo electronico 😀",
-  input: "text",
-  text: "Ingresa el usuario para identificarte en el chat",
-  icon: "success",
-
-  inputValidator: (value) => {
-    return !value && "Necesitas escribir un nombre de usuario para continuar!!";
-  },
-
-  allowOutsideClick: false,
-}).then((result) => {
-  user = result.value;
-  socket.emit(`authenticated`, user);
-});
+socket.emit(`authenticated`, user);
 
 chatBox.addEventListener("keyup", (evt) => {
   if (evt.key === "Enter") {

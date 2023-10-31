@@ -8,4 +8,8 @@ export const generateUserErrorInfo = (user) => {
 
 export const generateProductIdErrorInfo = () => {
     return 'El número de ID ingresado es incorrecto! Por favor, vuelva a ingresar un nuevo número! 😭'
-}
+};
+
+export const dataBaseErrroProducts = () => {
+    return 'Error al obtener los productos!!!'
+};

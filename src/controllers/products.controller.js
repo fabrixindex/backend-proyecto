@@ -1,4 +1,7 @@
 import { productsService } from "../services/products.service.js";
+import CustomError from "../utils/errorHandler/customError.js";
+import EnumErrors from "../utils/errorHandler/enum.js";
+import { generateProductIdErrorInfo, dataBaseErrroProducts } from "../utils/errorHandler/info.js"; 
 
 const ProductsService = new productsService()
 
@@ -36,15 +39,22 @@ export const getProductByIdController = async (req, res) => {
         if (product) {
             res.status(200).send({ status: "success", product });
           } else {
-            req.logger.error('Producto no encontrado. El ID es incorrecto!')
-            res
-              .status(404)
-              .send({ status: "error", message: "Producto no encontrado" });
+            const errorInfo = generateProductIdErrorInfo();
+            const CustomE = CustomError.createError({
+                name: EnumErrors.NOT_FOUND_ENTITY_ID_ERROR.type,
+                message: errorInfo,
+                code: EnumErrors.NOT_FOUND_ENTITY_ID_ERROR.type,
+            });
+
         };
     }catch (error) {
-        res
-          .status(500)
-          .send({ status: "error", message: "Error al obtener los productos" });
+        const errorInfo = dataBaseErrroProducts();
+        const CustomE = CustomError.createError({
+            name: EnumErrors.DATABASE_ERROR.type,
+            message: errorInfo,
+            code: EnumErrors.DATABASE_ERROR.type,
+            cause: error.message,
+        })
       }
 };
 
@@ -156,4 +166,32 @@ export const getMockingProductsController = (req, res) => {
           .send({ status: "error", message: "Error al obtener mocking Products" });
       });
   };
-  
+
+export const sendProductImageController = async (req, res) => {
+    try{
+        const productId = req.params.pid;
+
+        const file = req.files[0];
+
+        if (!file) {
+          return res
+            .status(400)
+            .json({ message: "No se proporcionó un archivo de imagen" });
+        }
+    
+        const currentDate = new Date(Date.now()).toISOString().split("T")[0];
+        const fileName = `${currentDate}-${file.originalname}`;
+
+        await ProductsService.sendProductImage(productId, fileName);
+
+        res.status(200).json({ status: 'success', message: 'Thumbnails de producto actualizadas' });
+        
+    }catch(error){
+        console.log(error);
+        return res.status(500).json({
+            status: false,
+            message: "Error al enviar la imagen.",
+            error: error.message,
+        });
+    }
+};

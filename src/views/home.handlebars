@@ -1,40 +1,187 @@
 <div>
-  <div>
-  <p>Bienvenido!</p>
-  <p>{{user.name}} {{#if isAdmin}}<p>Admin ✅</p>{{/if}}</p>
-  <p>{{user.email}}</p>
-  </div>
-  <button id="yourProfile">Tu perfil</button>
-  <button id="yourCart" data-cart="{{user.cart}}">Tu Carrito</button>
-  <button id="chatRoom">Sala de Chat</button>
-  <h1>Listado de productos</h1>
-  <ul>
+
+  <nav class="navbar">
+    <h1 id="title">Catsbooks</h1>
+    <div id="navbar-buttons">
+      <button id="chatRoom" class="btn-nav"><a href="/webchat">Chat Room</a></button>
+      <button id="yourCart" data-cart="{{user.cart}}" class="btn-nav">🛒</button>
+      <p class="p-nav">{{#if isAdmin}}<span>Admin ✅</span>{{/if}}</p>
+      <div class="profile-container">
+      <button id="yourProfile" class="btn-nav"><a href="/profile">Your Profile</a></button>
+      <a href="/profile"><img id="profile-img" src="{{imageUrl}}" alt="profile-img" ></a>
+      </div>
+    </div>
+  </nav>
+
+  <ul id="products-container">
     {{#each products.products}}
-    <li>
-      <!-- Agregar IMG -->
+    <li class="product-card">
+      <img id="product-image" src='/uploads/products/{{this._id}}/{{this.thumbnails}}' alt="product-img" class="product-image" onerror="this.src = '/img/producto-sin-foto.png'">
       <h3>{{this.title}}</h3>
       <p>{{this.description}}</p>
       <p>Precio: ${{this.price}}</p>
-    </li>
       <button class="addToCart" data-id="{{this._id}}" data-cart="{{../user.cart}}">Agregar al carrito</button>
+    </li>
     {{/each}}
   </ul>
-  <div>
+  <div id="pagination">
     {{#if products.hasPrevPage}}
-    <a href="{{products.prevLink}}">Anterior</a>
+    <a href="{{products.prevLink}}" class="pagination-link">Anterior</a>
     {{/if}}
-    
-    <span>Página {{products.page}} de {{products.totalPages}}</span>
-      
+    <span class="page-info">Página {{products.page}} de {{products.totalPages}}</span>
     {{#if products.hasNextPage}}
-      <a href="{{products.nextLink}}">Siguiente</a>
+    <a href="{{products.nextLink}}" class="pagination-link">Siguiente</a>
     {{/if}}
   </div>
 </div>
+
+<style>
+.navbar {
+  background-color: #007bff;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+}
+
+#navbar-buttons {
+  display: flex;
+  align-items: center;
+}
+
+#title {
+  font-size: 34px;
+  color: white;
+  margin: 0;
+  margin-left: 1rem;
+}
+
+.btn-nav {
+  padding: 10px 20px; 
+  border: none;
+  border-radius: 20px; 
+  background-color: #3498db; 
+  color: #fff; 
+  cursor: pointer;
+  transition: box-shadow 0.3s, background-color 0.3s; 
+  margin-left: 15px; 
+  font-size: 1.1rem;
+  text-decoration: none;
+};
+
+
+.btn-nav:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
+  background-color: #0076a3; 
+}
+
+#yourProfile {
+  font-size: 1.2rem;
+}
+
+.profile-container {
+  display: flex;
+  align-items: center;
+}
+
+.profile-container button {
+  margin-right: 10px; 
+}
+
+.p-nav {
+  color: white;
+  font-size: 1.5rem;
+  margin-left: 15px; 
+}
+
+.product-image {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+#products-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+}
+
+.product-card {
+  flex-grow: 1;
+  width: 250px;
+  height: 400px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  margin: 1rem; 
+}
+
+.addToCart {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer
+}
+
+#pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination-link {
+    text-decoration: none;
+    padding: 5px 10px;
+    margin: 0 10px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 4px;
+}
+
+.page-info {
+    font-size: 18px;
+    margin: 0 10px;
+}
+
+ #profile-img {
+    width: 40px; 
+    height: 40px; 
+    border-radius: 50%; 
+  }
+
+</style>
+
+<script>
+  const productImage = document.getElementById("product-image");
+
+  function loadFallbackImage() { 
+      console.log("Cargando imagen de reemplazo");
+      productImage.src = '/img/producto-sin-foto.png';
+  }
+
+  productImage.addEventListener("error", loadFallbackImage);
+</script>
+
+<script>
+  const profileImg = document.getElementById("profile-img");
+
+  profileImg.src = "{{imageUrl}}";
+
+  profileImg.onload = function() {
+  };
+
+  profileImg.onerror = function() {
+    profileImg.src = "{{fileName}}";
+  };
+</script>
 
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/home.js"></script>
 <script src="/js/addToCart.js"></script> 
-<script src="/js/yourProfile.js"></script>
 <script src="/js/yourCart.js"></script>

@@ -2,7 +2,7 @@ const EnumErrors = {
     ROUTING_ERROR: {
         type: 1,
         statusCode: 404
-    },
+    }, 
     INVALID_TYPES_ERROR: {
         type: 2,
         statusCode: 400

@@ -3,6 +3,10 @@ import { mockingProducts } from "../utils/mocks.js"
 import CustomError from "../utils/errorHandler/customError.js"
 import { generateProductIdErrorInfo } from "../utils/errorHandler/info.js";
 import EnumErrors from "../utils/errorHandler/enum.js";
+import { transportMail } from "../config/mailing.config.js";
+import variables from "../config/dotenv.config.js"
+
+const MAIL_AUTH_USER = variables.MAIL_AUTH_user;
 
 export class productsService {
 
@@ -137,6 +141,22 @@ export class productsService {
 
             if (productDeleted === 0) {
               return `No se encontró el producto con ID ${id}.`;
+            };
+
+            const owner = productDeleted.owner
+
+            if (owner !== "admin") {
+
+                const emailToSendProductDeleted = {
+                    from: `${MAIL_AUTH_USER}`,
+                    to: `${owner}`,
+                    subject: `Tu Producto en CatsBook ha sido eliminado`,
+                    html: `<h1> ATENCION </h1>
+                            <p>Tu producto ha sido eliminado</p>
+                          `,
+                  };
+                  
+                  const info = await transportMail.sendMail(emailToSendProductDeleted);
             }
       
             return productDeleted;
@@ -154,4 +174,13 @@ export class productsService {
             throw error;
         }
     };
+
+    sendProductImage = async (id, newThumbnails) => {
+        try {
+            const product = await this.productRepository.sendProductImage(id, newThumbnails)
+            return product;
+        }catch(error){ 
+            console.log(error)
+        }
+    }
 };

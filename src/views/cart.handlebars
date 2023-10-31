@@ -1,30 +1,122 @@
 <div>
     <h1>Carrito de compras</h1>
-    <p>ID del carrito: {{cart._id}}</p>
+
     {{#if cart.products.length}}
-        <div>
-            <h2>Productos en el carrito:</h2>
-            <ul>
-                {{#each cart.products}}
-                    <li>
-                        <h3>{{this.productId.title}}</h3>
-                        <p>Precio: ${{this.productId.price}}</p>
-                        <p>Cantidad: {{this.quantity}}</p>
-                    </li>
-                {{/each}}
-            </ul>
+        <div class="cart-details">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Imagen</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each cart.products}}
+                        <tr>
+                            <td>{{this.productId.title}}</td>
+                            <td><img id="product-image" src="/uploads/products/{{this.productId._id}}/{{this.productId.thumbnails}}" alt="product-img" class="product-img" onerror="this.src = '/img/producto-sin-foto.png'"></td>
+                            <td>${{this.productId.price}}</td>
+                            <td>{{this.quantity}}</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
         </div>
-        <div>
-            <button id="backToProducts">Volver</button>
-            <button id="checkout" data-cart="{{cart._id}}">Finalizar compra</button>
+        <div class="cart-actions">
+            <a href="/products"><button class="cart-button">Volver</button></a>
+            <button id="checkout" data-cart="{{cart._id}}">Proceder al pago</button>
         </div>
     {{else}}
         <p>Carrito vacío</p>
-        <button id="backToProducts">Volver</button>
-        <button id="checkout" data-cart="{{cart._id}}" disabled>Finalizar compra</button>
+        <a href="/products"><button class="cart-button">Volver</button></a>
+        <button id="checkout" data-cart="{{cart._id}}" disabled>Proceder al pago</button>
     {{/if}}
 </div>
 
+<style>
+    
+.cart-details {
+    margin: 1rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #ccc;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.product-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.cart-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    margin-right: 10px;
+}
+
+.cart-button:hover {
+    background-color: #0056b3;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+#checkout {
+    background-color: #28a745; 
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+#checkout:hover {
+    background-color: #1e8337; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.cart-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    margin: 1rem;
+}
+
+</style>
+
+<script>
+  const productImage = document.getElementById("product-image");
+
+  function loadFallbackImage() { 
+      console.log("Cargando imagen de reemplazo");
+      productImage.src = '/img/producto-sin-foto.png';
+  }
+
+  productImage.addEventListener("error", loadFallbackImage);
+</script>
+
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="/js/backToProducts.js"></script>
 <script src="/js/checkOutCart.js"></script>

@@ -14,6 +14,15 @@ form.addEventListener('submit',e=>{
     }).then(result=>{
         if(result.status===200){
             window.location.replace('/products');
-        }
-    })
-})
+        }else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error de inicio de sesión',
+              text: 'Credenciales incorrectas. Por favor, verifica tus datos.',
+            });
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    });

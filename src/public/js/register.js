@@ -34,10 +34,19 @@ form.addEventListener('submit', (e) => {
     })
     .then((result) => result.json())
     .then((json) => {
-        console.log(json);
-        Swal.fire({
-            title: `Successfully registered user! 😀`,
-            icon: "success",
-        });
+        if (json.status === "success") {
+            Swal.fire({
+                title: `Successfully registered user! 😀`,
+                icon: "success",
+            }).then(() => {
+                window.location.href = '/login';
+            });
+        } else {
+            Swal.fire({
+                title: "Registration Error",
+                text: json.error || "An error occurred during registration.",
+                icon: "error",
+            });
+        }
     });
 });

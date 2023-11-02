@@ -18,9 +18,10 @@ const PRIVATE_KEY = variables.PRIVATE_key;
 export const registerController = async (req, res) => {
   try {
     req.logger.info(`Nuevo usuario registrado! 😁`);
-    res.send({ status: "success", message: "User registered" });
+    res.status(200).send({ status: "success", message: "User registered" });
   } catch (error) {
     console.log(error);
+    res.status(500).send({ status: "error", error: "Internal Server Error" });
   }
 };
 
@@ -48,13 +49,14 @@ export const loginController = async (req, res) => {
       `Logueo Realizado! Usuario conectado: ${req.session.user.name} 😁`
     );
 
-    res.send({
+    res.status(200).send({
       status: "success",
       user: req.session.user,
       message: "¡Primer logueo realizado! :)",
     });
   } catch (error) {
     console.log(error);
+    res.status(500).send({ status: "error", error: "Internal Server Error" });
   }
 };
 
@@ -154,14 +156,11 @@ export const currentController = async (req, res) => {
   }
 };
 
-//MODULAR
-
 export const changeUserRoleToPremiumController = async (req, res) => {
   try {
     const userId = req.params.uid;
 
     const user = await userModel.findById(userId);
-    /*const user = await UsersService.getUserById(userId)*/
 
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
@@ -206,8 +205,6 @@ export const changeUserRoleToPremiumController = async (req, res) => {
 
     user.userRole = user.userRole === "user" ? "premium" : "user";
 
-    /*await UsersService.updateUserRole(userId, {role: user.userRole});*/
-
     await user.save();
 
     res.status(200).json({
@@ -231,7 +228,7 @@ export const sendDocumentsToUser = async (req, res) => {
     const files = req.files;
 
     const currentDate = new Date(Date.now()).toISOString().split("T")[0];
-    const fileName = `${currentDate}-${files.originalname}`;
+    const fileName = `${currentDate}-${files[0].originalname}`;
 
     const duplicateFiles = [];
 
@@ -265,7 +262,6 @@ export const sendDocumentsToUser = async (req, res) => {
       .status(200)
       .json({ message: "Documentos enviados exitosamente" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Error al enviar documento" });
   }
 };

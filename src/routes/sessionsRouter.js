@@ -12,7 +12,7 @@ sessionRouter.post( "/register", passport.authenticate("register", {
   registerController
 );
 
-sessionRouter.get("/api/sessions/failregister", async (req, res) => {
+sessionRouter.get("/failregister", async (req, res) => {
   res.status(400).send({ status: "error", error: "Registry fail" });
 });
 
@@ -22,7 +22,7 @@ sessionRouter.post("/login", passport.authenticate("login", {
   loginController
 );
 
-sessionRouter.get("/api/sessions/faillogin", (req, res) => {
+sessionRouter.get("/faillogin", (req, res) => {
   res.status(400).send({ status: "error", error: "Login fail" });
 });
 

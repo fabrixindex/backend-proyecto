@@ -4,7 +4,7 @@ const userEmail = document.getElementById('userEmail');
 form.addEventListener('submit', async (event) => {
     event.preventDefault(); 
     const email = userEmail.value;
-    const actionURL = `http://localhost:8080/api/sessions/send-recover-mail/${email}`;
+    const actionURL = `/api/sessions/send-recover-mail/${email}`;
 
     try {
         const response = await fetch(actionURL, { method: 'GET' });
@@ -14,7 +14,7 @@ form.addEventListener('submit', async (event) => {
                 title: 'Mail enviado!',
                 text: 'Revisa tu correo electrónico.',
             }).then(() => {
-                window.location.href = 'http://localhost:8080/login';
+                window.location.href = '/login';
             });
         } else {
             Swal.fire({

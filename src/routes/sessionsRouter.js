@@ -37,7 +37,7 @@ sessionRouter.get("/githubcallback", passport.authenticate("github", {
     failureRedirect: "/api/sessions/githubFailure",
   }),
   githubCallbackController
-);
+); 
 
 sessionRouter.get("/githubFailure", (req, res) => {
   res.status(400).send({ status: 0, msg: "Github authentication failure" });

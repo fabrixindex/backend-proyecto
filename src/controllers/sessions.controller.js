@@ -84,7 +84,7 @@ export const sendEmailToRestartPassword = async (req, res) => {
         <h1 style="color: #333; font-size: 24px;">Recuperar Contraseña</h1>
         <hr style="border: 1px solid #ccc;">
         <p style="font-size: 16px;">Para recuperar tu contraseña, haz clic en el botón de abajo:</p>
-        <a href="${BASE_URL}:${PORT}/restore-pass/${token}" style="text-decoration: none;">
+        <a href="/restore-pass/${token}" style="text-decoration: none;">
           <button style="background-color: #007BFF; color: #fff; padding: 10px 20px; font-size: 18px; border: none; border-radius: 5px;">CLICK AQUÍ</button>
         </a>
       </div>

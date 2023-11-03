@@ -23,6 +23,8 @@ form.addEventListener('submit', e => {
                 title: 'Contraseña cambiada con éxito',
                 showConfirmButton: false,
                 timer: 1500
+            }).then(() => {
+                window.location.href = '/login';
             });
         } else {
             Swal.fire({
